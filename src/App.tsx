@@ -2,24 +2,60 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { AppProvider } from "@/context/AppContext";
+import Navbar from "@/components/Navbar";
+import CartSidebar from "@/components/CartSidebar";
+import CustomCursor from "@/components/CustomCursor";
+import Home from "./pages/Home";
+import Store from "./pages/Store";
+import Profile from "./pages/Profile";
+import Social from "./pages/Social";
+import Experience from "./pages/Experience";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ x: 40, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: -40, opacity: 0 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Home />} />
+          <Route path="/store" element={<Store />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/social" element={<Social />} />
+          <Route path="/experience" element={<Experience />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AppProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="noise-overlay min-h-screen bg-background">
+            <CustomCursor />
+            <Navbar />
+            <CartSidebar />
+            <AnimatedRoutes />
+          </div>
+        </BrowserRouter>
+      </AppProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
