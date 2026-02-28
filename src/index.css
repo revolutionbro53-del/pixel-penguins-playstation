@@ -101,7 +101,6 @@
 @layer base {
   * {
     @apply border-border;
-    cursor: none !important;
   }
 
   body {
@@ -205,19 +204,6 @@
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: hsl(var(--background)); }
   ::-webkit-scrollbar-thumb { background: hsl(var(--ps-blue)); border-radius: 2px; }
-
-  /* Custom cursor */
-  .custom-cursor {
-    position: fixed;
-    pointer-events: none;
-    z-index: 99999;
-    font-size: 18px;
-    color: hsl(var(--ps-neon));
-    text-shadow: 0 0 10px hsl(var(--ps-neon));
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s ease;
-    font-weight: 700;
-  }
 
   /* Marquee */
   @keyframes marquee {
