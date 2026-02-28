@@ -437,23 +437,26 @@ export default function Home() {
         title="Trophy Cabinet"
       >
         <div className="grid grid-cols-2 gap-3">
-          {trophies.concat(trophies).map((t, i) => (
-            <div
-              key={i}
-              className="ps-glass rounded-xl p-3 flex items-center gap-3"
-              style={{ boxShadow: trophyGlow[t.type] }}
-            >
-              <span className="text-2xl">{t.icon}</span>
-              <div>
-                <p
-                  className={`font-rajdhani font-bold text-sm ${trophyColor[t.type]}`}
-                >
-                  {t.name}
-                </p>
-                <p className="text-ps-secondary text-[11px]">{t.game}</p>
+          {trophies.concat(trophies).map((t, i) => {
+            const IconComponent = getTrophyIcon(t.type);
+            return (
+              <div
+                key={i}
+                className="ps-glass rounded-xl p-3 flex items-center gap-3"
+                style={{ boxShadow: trophyGlow[t.type] }}
+              >
+                <IconComponent />
+                <div>
+                  <p
+                    className={`font-rajdhani font-bold text-sm ${trophyColor[t.type]}`}
+                  >
+                    {t.name}
+                  </p>
+                  <p className="text-ps-secondary text-[11px]">{t.game}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </Modal>
     </div>
