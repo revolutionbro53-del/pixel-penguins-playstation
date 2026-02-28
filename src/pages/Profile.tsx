@@ -115,8 +115,6 @@ export default function Profile() {
         return TrophyIcon;
     }
   };
-    bronze: 'border-amber-600/30',
-  };
 
   const filteredTrophies = trophyFilter === 'All' ? trophyData : trophyData.filter(t => t.type === trophyFilter.toLowerCase());
   const xpPct = (user.xpCurrent / user.xpNext) * 100;

@@ -3,23 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '@/context/AppContext';
 import Modal from '@/components/Modal';
 import Toast from '@/components/Toast';
+import { useNavigate } from 'react-router-dom';
+import { gamesData } from '@/data/games';
 
 const genres = ['All', 'Action', 'RPG', 'Sports', 'Horror', 'Indie', 'PS Exclusive'];
-
-const gamesData = [
-  { id: 1, title: "Spider-Man 2", genre: "Action", price: 3999, rating: 4.7, exclusive: true, image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80" },
-  { id: 2, title: "God of War: Ragnarök", genre: "RPG", price: 4499, rating: 4.9, exclusive: true, image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&q=80" },
-  { id: 3, title: "Gran Turismo 7", genre: "Sports", price: 3499, rating: 4.3, exclusive: true, image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80" },
-  { id: 4, title: "Returnal", genre: "Indie", price: 2999, rating: 4.5, exclusive: true, image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&q=80" },
-  { id: 5, title: "Resident Evil 4", genre: "Horror", price: 3299, rating: 4.8, exclusive: false, image: "https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=400&q=80" },
-  { id: 6, title: "FIFA 24", genre: "Sports", price: 2499, rating: 4.0, exclusive: false, image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80" },
-  { id: 7, title: "Elden Ring", genre: "RPG", price: 3799, rating: 4.9, exclusive: false, image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80" },
-  { id: 8, title: "Horizon FW", genre: "Action", price: 3999, rating: 4.6, exclusive: true, image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80" },
-  { id: 9, title: "Ghost of Tsushima", genre: "Action", price: 2999, rating: 4.7, exclusive: true, image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&q=80" },
-  { id: 10, title: "Celeste", genre: "Indie", price: 999, rating: 4.8, exclusive: false, image: "https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=400&q=80" },
-  { id: 11, title: "Dead Space", genre: "Horror", price: 2799, rating: 4.5, exclusive: false, image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&q=80" },
-  { id: 12, title: "Bloodborne", genre: "RPG", price: 1999, rating: 4.9, exclusive: true, image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80" },
-];
 
 const psTiers = [
   { name: 'Essential', price: 499, features: ['Online Multiplayer', '2–3 Monthly Games', 'Exclusive Discounts', 'Cloud Saves (100GB)', 'Share Play'] },
@@ -29,6 +16,7 @@ const psTiers = [
 
 export default function Store() {
   const { addToCart, setCartOpen } = useApp();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [activeGenre, setActiveGenre] = useState('All');
   const [activeTier, setActiveTier] = useState(1);
@@ -100,11 +88,10 @@ export default function Store() {
             <motion.button
               key={g}
               onClick={() => setActiveGenre(g)}
-              className={`px-4 py-2 rounded-xl font-rajdhani font-semibold text-sm transition-all ${
-                activeGenre === g
-                  ? 'bg-ps-blue text-foreground border border-ps-neon'
-                  : 'bg-ps-surface-2 border border-ps-border text-ps-secondary hover:text-foreground'
-              }`}
+              className={`px-4 py-2 rounded-xl font-rajdhani font-semibold text-sm transition-all ${activeGenre === g
+                ? 'bg-ps-blue text-foreground border border-ps-neon'
+                : 'bg-ps-surface-2 border border-ps-border text-ps-secondary hover:text-foreground'
+                }`}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               style={activeGenre === g ? { boxShadow: '0 0 12px hsl(200 100% 50% / 0.3)' } : {}}
@@ -148,12 +135,13 @@ export default function Store() {
           {filteredGames.map(game => (
             <motion.div
               key={game.id}
-              className="ps-card group overflow-hidden"
+              className="ps-card group overflow-hidden cursor-pointer"
               layout
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               whileHover={{ y: -4, boxShadow: '0 0 24px hsl(200 100% 50% / 0.2), 0 8px 32px hsl(0 0% 0% / 0.4)' }}
+              onClick={() => navigate(`/store/${game.id}`)}
             >
               <div className="relative overflow-hidden">
                 <img src={game.image} alt={game.title} className="w-full h-44 object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -164,7 +152,10 @@ export default function Store() {
                 )}
                 <motion.button
                   className="absolute bottom-0 left-0 right-0 py-3 bg-ps-blue font-rajdhani font-bold text-sm tracking-wide translate-y-full group-hover:translate-y-0 transition-transform duration-300"
-                  onClick={() => handleAddToCart(game)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToCart(game);
+                  }}
                   whileTap={{ scale: 0.97 }}
                 >
                   🛒 Add to Cart
@@ -176,7 +167,7 @@ export default function Store() {
                   <span className="text-[11px] bg-ps-surface-2 border border-ps-border text-ps-secondary px-2 py-0.5 rounded-lg ml-2 flex-shrink-0">{game.genre}</span>
                 </div>
                 <div className="flex items-center gap-1 mb-2">
-                  {[1,2,3,4,5].map(star => (
+                  {[1, 2, 3, 4, 5].map(star => (
                     <span key={star} className={star <= Math.round(game.rating) ? 'text-ps-gold text-xs' : 'text-ps-secondary text-xs'}>★</span>
                   ))}
                   <span className="text-ps-secondary text-[11px] ml-1">{game.rating}</span>
@@ -198,9 +189,8 @@ export default function Store() {
           {psTiers.map((tier, i) => (
             <motion.div
               key={tier.name}
-              className={`relative rounded-2xl p-6 border cursor-pointer transition-all ${
-                activeTier === i ? 'ps-gradient-border' : 'border-ps-border'
-              }`}
+              className={`relative rounded-2xl p-6 border cursor-pointer transition-all ${activeTier === i ? 'ps-gradient-border' : 'border-ps-border'
+                }`}
               style={{
                 background: 'hsl(240 14% 8%)',
                 ...(activeTier === i ? { boxShadow: '0 0 24px hsl(200 100% 50% / 0.2)' } : {}),
@@ -226,9 +216,8 @@ export default function Store() {
                 ))}
               </ul>
               <motion.button
-                className={`w-full py-2.5 rounded-xl font-rajdhani font-bold text-sm ${
-                  activeTier === i ? 'bg-ps-blue text-white' : 'border border-ps-border text-ps-secondary hover:text-foreground'
-                }`}
+                className={`w-full py-2.5 rounded-xl font-rajdhani font-bold text-sm ${activeTier === i ? 'bg-ps-blue text-white' : 'border border-ps-border text-ps-secondary hover:text-foreground'
+                  }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={e => { e.stopPropagation(); setPsModal(true); }}

@@ -15,6 +15,7 @@ import Social from "./pages/Social";
 import Experience from "./pages/Experience";
 import News from "./pages/News";
 import NotFound from "./pages/NotFound";
+import GameDetails from "./pages/GameDetails";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ function AnimatedRoutes() {
         <Routes location={location}>
           <Route path="/" element={<Home />} />
           <Route path="/store" element={<Store />} />
+          <Route path="/store/:id" element={<GameDetails />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/social" element={<Social />} />
           <Route path="/experience" element={<Experience />} />
