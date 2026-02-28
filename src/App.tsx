@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AppProvider } from "@/context/AppContext";
 import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
-import CustomCursor from "@/components/CustomCursor";
 import Home from "./pages/Home";
 import Store from "./pages/Store";
 import Profile from "./pages/Profile";
@@ -53,7 +52,6 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <div className="noise-overlay min-h-screen bg-background">
-            <CustomCursor />
             <Navbar />
             <CartSidebar />
             <main className="pb-20 md:pb-0 pl-0 md:pl-[80px]">
