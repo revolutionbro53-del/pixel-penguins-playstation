@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/context/ThemeContext";
 import {
@@ -34,7 +35,22 @@ export default function Navbar() {
   const { user, cart, setCartOpen } = useApp();
   const { theme, setTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const notificationButtonRef = useRef<HTMLButtonElement>(null);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ bottom: 0, left: 0 });
+
+  // Update dropdown position when opened
+  useEffect(() => {
+    if (showNotifications && notificationButtonRef.current) {
+      const rect = notificationButtonRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      setDropdownPos({
+        bottom: viewportHeight - rect.bottom, // Anchor the bottom edge of the box to the bottom edge of the button
+        left: rect.right + 12
+      });
+    }
+  }, [showNotifications]);
 
   // Mock notifications
   const notifications = [
@@ -180,6 +196,7 @@ export default function Navbar() {
           {/* Notification */}
           <div className="relative w-full">
             <button
+              ref={notificationButtonRef}
               onClick={() => setShowNotifications(!showNotifications)}
               className="relative flex items-center justify-start gap-2 text-ps-secondary hover:text-foreground transition-colors p-2 w-full px-2 rounded-lg"
               title="Notifications"
@@ -196,16 +213,17 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* Notification Dropdown Panel */}
-            {showNotifications && (
+            {/* Notification Dropdown Panel via Portal */}
+            {showNotifications && createPortal(
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="absolute left-[calc(100%+16px)] bottom-0 w-80 ps-glass border border-ps-border rounded-xl shadow-2xl z-[100]"
+                className="fixed w-80 ps-glass border border-ps-border rounded-xl shadow-2xl z-[100] max-h-[85vh] flex flex-col"
+                style={{ bottom: dropdownPos.bottom, left: dropdownPos.left }}
               >
                 <div className="flex items-center justify-between p-4 border-b border-ps-border bg-ps-surface-2">
                   <h3 className="font-sst font-bold text-lg text-white">Notifications</h3>
-                  <span className="text-xs text-ps-neon cursor-pointer hover:underline">Mark all read</span>
+                  <span className="text-xs text-ps-neon cursor-pointer hover:underline" onClick={() => setShowNotifications(false)}>Close</span>
                 </div>
                 <div className="max-h-96 overflow-y-auto">
                   {notifications.map((notif) => (
@@ -231,7 +249,8 @@ export default function Navbar() {
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </motion.div>,
+              document.body
             )}
           </div>
 

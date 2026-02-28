@@ -390,7 +390,7 @@ export const gamesData: Game[] = [
         price: 2999,
         rating: 4.4,
         exclusive: false,
-        image: "https://images.unsplash.com/photo-1542751110-97427bbecfd6?w=800&q=80",
+        image: "/games/cyberpunk-vertical.png",
         bannerImage: "https://images.unsplash.com/photo-1542751110-97427bbecfd6?w=1600&q=80",
         themeColor: "300 100% 55%",
         description: "In the sprawling dystopia of Night City, become V — a mercenary outlaw going after a one-of-a-kind implant that grants the key to immortality.",
