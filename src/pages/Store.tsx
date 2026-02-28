@@ -16,26 +16,24 @@ const psTiers = [
 ];
 
 // ── Flash-deal price display ────────────────────────────────────────────────
-// Directly subscribes to DiscountContext so it re-renders on every discount change.
+// Subscribes directly to DiscountContext. Uses a tick counter so secsLeft is
+// always computed fresh from expiresAt — never gated behind stale state.
 function GamePriceDisplay({ gameId, basePrice }: { gameId: number; basePrice: number }) {
   const { getDiscount } = useDiscounts();
   const discount = getDiscount(gameId);
-  const [secsLeft, setSecsLeft] = useState<number>(() =>
-    discount ? Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000)) : 0
-  );
 
+  // Tick every second just to force a re-render for the countdown display.
+  // secsLeft itself is derived directly from expiresAt each render.
+  const [, setTick] = useState(0);
   useEffect(() => {
-    if (!discount) { setSecsLeft(0); return; }
-    const tick = () => {
-      const rem = Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000));
-      setSecsLeft(rem);
-    };
-    tick();
-    const id = setInterval(tick, 1000);
+    if (!discount) return;
+    const id = setInterval(() => setTick(t => t + 1), 1000);
     return () => clearInterval(id);
   }, [discount]);
 
-  // No active discount (or countdown expired) — show normal price
+  // Compute seconds left right now, from the authoritative expiry timestamp
+  const secsLeft = discount ? Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000)) : 0;
+
   if (!discount || secsLeft <= 0) {
     return <p className="font-rajdhani font-bold text-ps-neon text-lg">₹{basePrice.toLocaleString()}</p>;
   }
