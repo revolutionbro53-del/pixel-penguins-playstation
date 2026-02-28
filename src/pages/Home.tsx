@@ -7,6 +7,8 @@ import {
 } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import Modal from "@/components/Modal";
+import { NavLink } from "react-router-dom";
+import { gamesData } from "@/data/games";
 import {
   TrophyIcon,
   MedalGoldIcon,
@@ -22,7 +24,7 @@ const heroGames = [
     genre: "Action Adventure",
     rating: 9.3,
     image:
-      "https://unsplash.com/photos/a-close-up-of-a-spider-man-with-glowing-eyes-PXjQaGxi4JA",
+      "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=1920&q=80",
     description: "Swing through Marvel's New York as both Peter and Miles.",
   },
   {
@@ -30,8 +32,7 @@ const heroGames = [
     title: "God of War: Ragnarök",
     genre: "Action RPG",
     rating: 9.5,
-    image:
-      "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1920&q=80",
+    image: "/god-of-war.jpg",
     description: "Kratos and Atreus face the Norse apocalypse together.",
   },
   {
@@ -39,8 +40,7 @@ const heroGames = [
     title: "Gran Turismo 7",
     genre: "Racing Sim",
     rating: 8.7,
-    image:
-      "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1920&q=80",
+    image: "/gt7.jpg",
     description: "The most authentic racing experience on PlayStation.",
   },
 ];
@@ -49,8 +49,7 @@ const continuePlaying = [
   {
     id: 1,
     title: "God of War",
-    image:
-      "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&q=80",
+    image: "/god-of-war.jpg",
     progress: 72,
     lastPlayed: "2 hours ago",
   },
@@ -58,23 +57,21 @@ const continuePlaying = [
     id: 2,
     title: "Spider-Man 2",
     image:
-      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80",
+      "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=400&q=80",
     progress: 44,
     lastPlayed: "Yesterday",
   },
   {
     id: 3,
     title: "Horizon FW",
-    image:
-      "https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=400&q=80",
+    image: "/horizon-fw.png",
     progress: 88,
     lastPlayed: "3 days ago",
   },
   {
     id: 4,
     title: "GT7",
-    image:
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+    image: "/gt7.jpg",
     progress: 31,
     lastPlayed: "Last week",
   },
@@ -292,6 +289,69 @@ export default function Home() {
                   </div>
                 </div>
               </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── New in Store ── */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-rajdhani font-bold text-2xl text-foreground">
+              New in Store
+            </h2>
+            <NavLink
+              to="/store"
+              className="text-ps-neon font-rajdhani font-semibold text-sm hover:underline"
+            >
+              See all →
+            </NavLink>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+            {gamesData.slice(0, 6).map((game) => (
+              <NavLink key={game.id} to={`/store/${game.id}`}>
+                <motion.div
+                  className="flex-shrink-0 w-44 rounded-2xl overflow-hidden ps-card group cursor-pointer"
+                  whileHover={{ y: -6, scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <div className="relative h-32 overflow-hidden">
+                    <img
+                      src={game.image}
+                      alt={game.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                    {game.exclusive && (
+                      <span
+                        className="absolute top-2 left-2 text-[10px] font-rajdhani font-bold px-2 py-0.5 rounded text-white"
+                        style={{ background: "hsl(200 100% 50%)" }}
+                      >
+                        PS EXCLUSIVE
+                      </span>
+                    )}
+                    <div className="absolute bottom-2 right-2 flex items-center gap-0.5">
+                      <span className="text-yellow-400 text-xs">★</span>
+                      <span className="text-white text-xs font-rajdhani font-bold">
+                        {game.rating}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <p className="font-rajdhani font-bold text-sm leading-tight mb-1 truncate">
+                      {game.title}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-ps-secondary text-xs">{game.genre}</span>
+                      <span
+                        className="font-rajdhani font-bold text-sm"
+                        style={{ color: "hsl(200 100% 60%)" }}
+                      >
+                        ₹{game.price.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              </NavLink>
             ))}
           </div>
         </section>
