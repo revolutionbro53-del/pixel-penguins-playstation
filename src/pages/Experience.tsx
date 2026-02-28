@@ -230,16 +230,46 @@ export default function Experience() {
   const [typing, setTyping] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
 
-  const sendMessage = (text: string) => {
+  // ==========================================
+  // 🔑 DEVELOPER: ADD YOUR GEMINI API KEY HERE
+  // ==========================================
+  const GEMINI_API_KEY = "AIzaSyBTY1gHw4RB3vbSPLt8mphhoeklDd1Bkhw";
+
+  const getGeminiResponse = async (prompt: string, key: string) => {
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `You are Astro, a helpful PlayStation AI Coach. Your user is GhostBlade42, a Trophy Hunter. Keep responses short, enthusiastic, and focus on PlayStation games. User prompt: ${prompt}` }] }]
+        })
+      });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message);
+      return data.candidates[0].content.parts[0].text;
+    } catch (err: any) {
+      console.error("Gemini Error Stack:", err);
+      console.error("Gemini Error Message:", err?.message);
+      return "Error connecting to AI Coach. Check console log.";
+    }
+  };
+
+  const sendMessage = async (text: string) => {
     setMessages((m) => [...m, { from: "user", text }]);
     setTyping(true);
-    setTimeout(() => {
-      setTyping(false);
-      const resp =
-        aiResponses[text] ||
-        "Great question! Based on your gaming profile, I'd recommend checking out the PS Store for some hidden gems tailored to your playstyle. Your Action and Exploration scores suggest you'd love open-world RPGs.";
+
+    if (GEMINI_API_KEY && GEMINI_API_KEY.trim() !== "") {
+      const resp = await getGeminiResponse(text, GEMINI_API_KEY);
       setMessages((m) => [...m, { from: "ai", text: resp }]);
-    }, 1800);
+    } else {
+      setTimeout(() => {
+        const resp =
+          aiResponses[text] ||
+          "Great question! But my real AI brain is offline. Please paste your Gemini API key in the GEMINI_API_KEY variable in the code!";
+        setMessages((m) => [...m, { from: "ai", text: resp }]);
+      }, 1000);
+    }
+    setTyping(false);
   };
 
   useEffect(() => {
@@ -303,17 +333,17 @@ export default function Experience() {
           i === 4
             ? "GhostBlade42"
             : [
-                "ShadowWolf",
-                "NeonBlade",
-                "PixelKing",
-                "DragonSlayer",
-                "GhostBlade42",
-                "ArcticFox",
-                "VelvetStrike",
-                "CosmicDrift",
-                "NightOwl",
-                "CrimsonBlade",
-              ][i],
+              "ShadowWolf",
+              "NeonBlade",
+              "PixelKing",
+              "DragonSlayer",
+              "GhostBlade42",
+              "ArcticFox",
+              "VelvetStrike",
+              "CosmicDrift",
+              "NightOwl",
+              "CrimsonBlade",
+            ][i],
         seed: [
           "shadow",
           "neon",
@@ -408,11 +438,10 @@ export default function Experience() {
                   </div>
                 )}
                 <div
-                  className={`max-w-xs rounded-xl px-3 py-2 text-sm font-inter whitespace-pre-line ${
-                    msg.from === "ai"
-                      ? "ps-glass border border-ps-border text-foreground"
-                      : "bg-ps-blue text-white"
-                  }`}
+                  className={`max-w-xs rounded-xl px-3 py-2 text-sm font-inter whitespace-pre-line ${msg.from === "ai"
+                    ? "ps-glass border border-ps-border text-foreground"
+                    : "bg-ps-blue text-white"
+                    }`}
                 >
                   {msg.text}
                 </div>
@@ -431,18 +460,37 @@ export default function Experience() {
               </div>
             )}
           </div>
-          <div className="p-3 border-t border-ps-border flex flex-wrap gap-2">
-            {quickReplies.map((qr) => (
-              <motion.button
-                key={qr}
-                className="text-[11px] font-rajdhani font-semibold border border-ps-neon/30 text-ps-neon px-3 py-1.5 rounded-full"
-                whileHover={{ scale: 1.03, borderColor: "hsl(200 100% 50%)" }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => !typing && sendMessage(qr)}
-              >
-                {qr}
-              </motion.button>
-            ))}
+          <div className="p-3 border-t border-ps-border flex flex-col gap-3">
+            <div className="flex flex-wrap gap-2">
+              {quickReplies.map((qr) => (
+                <motion.button
+                  key={qr}
+                  className="text-[11px] font-rajdhani font-semibold border border-ps-neon/30 text-ps-neon px-3 py-1.5 rounded-full"
+                  whileHover={{ scale: 1.03, borderColor: "hsl(200 100% 50%)" }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => !typing && sendMessage(qr)}
+                >
+                  {qr}
+                </motion.button>
+              ))}
+            </div>
+            <div className="flex gap-2 relative">
+              <input
+                type="text"
+                placeholder="Ask your Coach (or type your API prompts)..."
+                className="flex-1 ps-glass border border-ps-border rounded-xl px-3 py-2 text-sm focus:border-ps-neon focus:outline-none"
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "Enter" &&
+                    e.currentTarget.value.trim() &&
+                    !typing
+                  ) {
+                    sendMessage(e.currentTarget.value);
+                    e.currentTarget.value = "";
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -510,11 +558,10 @@ export default function Experience() {
                   </div>
                 </div>
                 <motion.button
-                  className={`w-full py-2 rounded-xl font-rajdhani font-semibold text-xs border ${
-                    a.boosted
-                      ? "bg-ps-neon/20 border-ps-neon text-ps-neon"
-                      : "border-ps-border text-ps-secondary hover:text-foreground"
-                  }`}
+                  className={`w-full py-2 rounded-xl font-rajdhani font-semibold text-xs border ${a.boosted
+                    ? "bg-ps-neon/20 border-ps-neon text-ps-neon"
+                    : "border-ps-border text-ps-secondary hover:text-foreground"
+                    }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => toggleBoost(a.id)}
@@ -789,11 +836,10 @@ export default function Experience() {
                             [activeZone]: h,
                           }))
                         }
-                        className={`flex-1 py-2 rounded-xl font-rajdhani font-semibold text-sm border ${
-                          zoneHaptics[activeZone] === h
-                            ? "bg-ps-blue border-ps-neon"
-                            : "border-ps-border text-ps-secondary"
-                        }`}
+                        className={`flex-1 py-2 rounded-xl font-rajdhani font-semibold text-sm border ${zoneHaptics[activeZone] === h
+                          ? "bg-ps-blue border-ps-neon"
+                          : "border-ps-border text-ps-secondary"
+                          }`}
                       >
                         {h}
                       </button>
@@ -836,11 +882,10 @@ export default function Experience() {
               <button
                 key={t}
                 onClick={() => setLbTab(t)}
-                className={`px-4 py-2 rounded-xl font-rajdhani font-semibold text-sm border transition-all ${
-                  lbTab === t
-                    ? "bg-ps-blue border-ps-neon"
-                    : "border-ps-border text-ps-secondary"
-                }`}
+                className={`px-4 py-2 rounded-xl font-rajdhani font-semibold text-sm border transition-all ${lbTab === t
+                  ? "bg-ps-blue border-ps-neon"
+                  : "border-ps-border text-ps-secondary"
+                  }`}
               >
                 {t}
               </button>
@@ -880,8 +925,8 @@ export default function Experience() {
                     style={
                       row.rank <= 3
                         ? {
-                            borderLeft: `3px solid ${row.rank === 1 ? "hsl(51 100% 50%)" : row.rank === 2 ? "hsl(0 0% 75%)" : "hsl(25 60% 50%)"}`,
-                          }
+                          borderLeft: `3px solid ${row.rank === 1 ? "hsl(51 100% 50%)" : row.rank === 2 ? "hsl(0 0% 75%)" : "hsl(25 60% 50%)"}`,
+                        }
                         : row.isMe
                           ? { borderLeft: "3px solid hsl(200 100% 50%)" }
                           : {}
