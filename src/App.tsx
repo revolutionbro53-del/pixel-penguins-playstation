@@ -54,7 +54,9 @@ const App = () => (
             <CustomCursor />
             <Navbar />
             <CartSidebar />
-            <AnimatedRoutes />
+            <main className="pb-20 md:pb-0 pl-0 md:pl-[80px]">
+              <AnimatedRoutes />
+            </main>
           </div>
         </BrowserRouter>
       </AppProvider>

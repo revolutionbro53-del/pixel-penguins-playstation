@@ -1,7 +1,8 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useState } from "react";
 
 const navItems = [
   { path: "/", label: "Home", icon: "⊞" },
@@ -14,9 +15,10 @@ const navItems = [
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, cart, setCartOpen } = useApp();
-
   const { theme, setTheme } = useTheme();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const themeOptions = [
     { value: "dark", label: "Dark", emoji: "🌑" },
@@ -27,39 +29,49 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Desktop Top Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 ps-glass border-b border-ps-border hidden md:flex items-center justify-between px-8 h-16">
+      {/* Desktop Left Sidebar */}
+      <nav
+        className="group fixed left-0 top-0 h-screen z-50 ps-glass border-r border-ps-border hidden md:flex flex-col items-center w-[80px] hover:w-[280px] transition-all duration-300 overflow-hidden py-6"
+        onMouseEnter={() => setIsSidebarOpen(true)}
+        onMouseLeave={() => setIsSidebarOpen(false)}
+      >
         {/* Logo */}
-        <NavLink to="/" className="flex items-center gap-2">
-          <span className="text-2xl">🎮</span>
-          <span className="font-sst font-bold text-2xl tracking-wider">
-            <span className="text-foreground">Play</span>
-            <span className="text-ps-neon">Station</span>
-          </span>
-          <span className="text-ps-secondary font-sst text-xs ml-1 tracking-widest uppercase">
-            Next Level
-          </span>
+        <NavLink to="/" className="flex items-center gap-3 px-4 mb-8 whitespace-nowrap">
+          <span className="text-3xl flex-shrink-0">🎮</span>
+          <div className="hidden group-hover:flex flex-col">
+            <span className="font-sst font-bold text-xl tracking-wider">
+              <span className="text-foreground">Play</span>
+              <span className="text-ps-neon">Station</span>
+            </span>
+            <span className="text-ps-secondary font-sst text-xs tracking-widest uppercase leading-none">
+              Next Level
+            </span>
+          </div>
         </NavLink>
 
-        {/* Nav Links */}
-        <div className="flex items-center gap-1">
+        {/* Nav Items */}
+        <div className="flex flex-col w-full flex-1 gap-2 px-2">
           {navItems.slice(0, 5).map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <NavLink key={item.path} to={item.path}>
                 <motion.div
-                  className={`relative px-5 py-2 font-sst font-semibold text-base tracking-wide transition-colors ${
+                  className={`relative w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-colors ${
                     isActive
-                      ? "text-ps-neon"
+                      ? "text-ps-neon bg-ps-surface-2"
                       : "text-ps-secondary hover:text-foreground"
                   }`}
-                  whileHover={{ y: -1 }}
+                  whileHover={{ x: 2 }}
+                  title={item.label}
                 >
-                  {item.label}
+                  <span className="text-2xl flex-shrink-0">{item.icon}</span>
+                  <span className="hidden group-hover:block font-sst font-semibold text-base tracking-wide whitespace-nowrap">
+                    {item.label}
+                  </span>
                   {isActive && (
                     <motion.div
-                      layoutId="nav-underline"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-ps-neon rounded-full"
+                      layoutId="nav-highlight"
+                      className="absolute left-0 top-0 bottom-0 w-1 bg-ps-neon rounded-r-full"
                       style={{ boxShadow: "0 0 8px hsl(200 100% 50%)" }}
                     />
                   )}
@@ -69,14 +81,17 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Right side */}
-        <div className="flex items-center gap-4">
+        {/* Bottom Controls */}
+        <div className="flex flex-col w-full gap-3 border-t border-ps-border pt-4 px-2">
           {/* Theme Switcher */}
-          <div className="relative">
+          <div className="relative w-full" title="Theme">
             <select
-              className="bg-ps-surface text-ps-secondary border border-ps-neon rounded-xl px-2 py-1 font-sst text-sm focus:outline-none focus:ring-2 focus:ring-ps-neon transition-colors shadow"
+              className="bg-ps-surface text-ps-secondary border border-ps-neon rounded-lg px-3 py-2 font-sst text-sm focus:outline-none focus:ring-2 focus:ring-ps-neon transition-colors shadow w-full"
               style={{
-                minWidth: 90,
+                boxShadow: "0 0 8px hsl(var(--ps-neon) / 0.2)",
+              }}
+              className="bg-ps-surface text-ps-secondary border border-ps-neon rounded-lg px-3 py-2 font-sst text-sm focus:outline-none focus:ring-2 focus:ring-ps-neon transition-colors shadow w-full"
+              style={{
                 boxShadow: "0 0 8px hsl(var(--ps-neon) / 0.2)",
               }}
               value={theme}
@@ -94,10 +109,14 @@ export default function Navbar() {
               ))}
             </select>
           </div>
+
           {/* Notification */}
-          <button className="relative text-ps-secondary hover:text-foreground transition-colors">
-            <span className="text-xl">🔔</span>
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white font-bold">
+          <button
+            className="relative w-full flex items-center justify-center text-ps-secondary hover:text-foreground transition-colors py-2"
+            title="Notifications"
+          >
+            <span className="text-2xl">🔔</span>
+            <span className="absolute top-0 right-1 w-3 h-3 bg-red-500 rounded-full text-[8px] flex items-center justify-center text-white font-bold">
               3
             </span>
           </button>
@@ -105,11 +124,12 @@ export default function Navbar() {
           {/* Cart */}
           <button
             onClick={() => setCartOpen(true)}
-            className="relative text-ps-secondary hover:text-foreground transition-colors"
+            className="relative w-full flex items-center justify-center text-ps-secondary hover:text-foreground transition-colors py-2"
+            title="Cart"
           >
-            <span className="text-xl">🛒</span>
+            <span className="text-2xl">🛒</span>
             {cart.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-ps-neon rounded-full text-[10px] flex items-center justify-center text-black font-bold">
+              <span className="absolute top-0 right-1 w-3 h-3 bg-ps-neon rounded-full text-[8px] flex items-center justify-center text-black font-bold">
                 {cart.length}
               </span>
             )}
@@ -117,16 +137,17 @@ export default function Navbar() {
 
           {/* PS Plus badge */}
           <div
-            className="px-2 py-0.5 rounded-full border border-ps-gold text-ps-gold font-sst text-xs font-bold tracking-wide"
+            className="px-3 py-2 rounded-lg border border-ps-gold text-ps-gold font-sst text-xs font-bold tracking-wide text-center hidden group-hover:block"
             style={{ boxShadow: "0 0 8px hsl(51 100% 50% / 0.3)" }}
+            title="PS Plus"
           >
-            PS PLUS
+            PS+
           </div>
 
           {/* Avatar */}
-          <NavLink to="/profile">
+          <NavLink to="/profile" className="w-full flex justify-center" title="Profile">
             <div
-              className="w-8 h-8 rounded-full overflow-hidden border-2 border-ps-neon"
+              className="w-10 h-10 rounded-lg overflow-hidden border-2 border-ps-neon"
               style={{ boxShadow: "0 0 8px hsl(200 100% 50% / 0.5)" }}
             >
               <img
