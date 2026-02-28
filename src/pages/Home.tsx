@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import Modal from "@/components/Modal";
 import {
@@ -148,6 +148,7 @@ export default function Home() {
   const { user, friends } = useApp();
   const [joinModal, setJoinModal] = useState<string | null>(null);
   const [trophyModal, setTrophyModal] = useState(false);
+  const [wallpaper, setWallpaper] = useState<string | null>(null);
 
   // Greeting logic
   function getGreeting() {
@@ -156,6 +157,21 @@ export default function Home() {
     if (hour < 18) return "afternoon";
     return "evening";
   }
+
+  // Load wallpaper from localStorage on mount
+  useEffect(() => {
+    const savedWallpaper = localStorage.getItem("psWallpaper");
+    if (savedWallpaper) {
+      setWallpaper(savedWallpaper);
+    }
+
+    // Listen for wallpaper changes from navbar
+    const handleWallpaperChange = (e: any) => {
+      setWallpaper(e.detail);
+    };
+    window.addEventListener("wallpaperChange", handleWallpaperChange);
+    return () => window.removeEventListener("wallpaperChange", handleWallpaperChange);
+  }, []);
 
   const trophyGlow: Record<string, string> = {
     platinum: "0 0 12px hsl(270 60% 60% / 0.7)",
@@ -186,29 +202,43 @@ export default function Home() {
     }
   };
 
+  // Scroll tracking for greeting fade
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const greetingOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const bgOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
   return (
-    <div className="min-h-screen pb-20 md:pb-0 md:pt-16">
-      {/* Hero Section with background image and greeting */}
-      <div className="relative h-[60vh] md:h-[75vh] overflow-hidden flex items-center justify-center">
-        <img
-          src="public\1ee2ad12-267f-4753-b308-69638d8e1950.jpg"
+    <div className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
+      {/* Hero Section - Section 1 */}
+      <div ref={heroRef} className="relative h-screen w-full flex items-center justify-center snap-start overflow-hidden">
+        <motion.img
+          src={wallpaper || "public\\1ee2ad12-267f-4753-b308-69638d8e1950.jpg"}
           alt="PlayStation Background"
-          className="absolute inset-0 w-full h-full object-cover z-0"
-          style={{ filter: "brightness(0.85)" }}
+          className="fixed inset-0 w-full h-full object-cover z-0"
+          style={{ 
+            filter: "brightness(0.85)",
+            opacity: bgOpacity,
+            pointerEvents: "none"
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
-        <div className="relative z-10 text-center">
+        <motion.div className="relative z-10 text-center" style={{ opacity: greetingOpacity }}>
           <h1 className="font-rajdhani font-bold text-4xl md:text-6xl text-foreground mb-3 drop-shadow-lg">
             Good {getGreeting()}, {user.username}
           </h1>
           <p className="text-ps-secondary font-inter text-xl md:text-2xl mb-2 drop-shadow">
             What do you want to play today?
           </p>
-        </div>
+        </motion.div>
       </div>
 
-      <div className="px-4 md:px-8 lg:px-20 space-y-10 py-8">
+      {/* Content Section - Section 2 */}
+      <div className="relative z-10 w-full snap-start px-4 md:px-8 lg:px-20 space-y-10 py-8 bg-background md:pt-16 pb-20 md:pb-0">
         {/* Continue Playing */}
         <section>
           <h2 className="font-rajdhani font-bold text-2xl mb-4 text-foreground">

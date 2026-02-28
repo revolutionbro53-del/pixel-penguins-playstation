@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useRef } from "react";
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/context/ThemeContext";
 import {
@@ -12,6 +13,7 @@ import {
   ProfileIcon,
   BellIcon,
   CartIcon,
+  CameraIcon,
 } from "@/components/icons";
 
 const navItems = [
@@ -27,6 +29,21 @@ export default function Navbar() {
   const location = useLocation();
   const { user, cart, setCartOpen } = useApp();
   const { theme, setTheme } = useTheme();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleWallpaperUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target?.result as string;
+        localStorage.setItem("psWallpaper", imageData);
+        // Dispatch custom event to notify Home component
+        window.dispatchEvent(new CustomEvent("wallpaperChange", { detail: imageData }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const themeOptions = [
     { value: "dark", label: "Dark", emoji: "🌑" },
@@ -124,6 +141,27 @@ export default function Navbar() {
               Theme
             </span>
           </div>
+
+          {/* Change Background */}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center justify-start gap-2 text-ps-secondary hover:text-ps-neon transition-colors p-2 w-full px-2 rounded-lg"
+            title="Change Background"
+          >
+            <div className="w-6 h-6 flex-shrink-0">
+              <CameraIcon />
+            </div>
+            <span className="hidden group-hover:block font-sst font-semibold text-sm tracking-wide whitespace-nowrap">
+              Background
+            </span>
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleWallpaperUpload}
+            className="hidden"
+          />
 
           {/* Notification */}
           <button
