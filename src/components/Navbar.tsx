@@ -12,11 +12,13 @@ import {
   ProfileIcon,
   BellIcon,
   CartIcon,
+  ConsolesIcon,
 } from "@/components/icons";
 
 const navItems = [
   { path: "/", label: "Home", icon: HomeIcon },
   { path: "/store", label: "Store", icon: StoreIcon },
+  { path: "/consoles", label: "Consoles", icon: ConsolesIcon },
   { path: "/social", label: "Social", icon: SocialIcon },
   { path: "/experience", label: "XP", icon: XPIcon },
   { path: "/news", label: "News", icon: NewsIcon },
@@ -38,7 +40,7 @@ export default function Navbar() {
   return (
     <>
       {/* Desktop Left Sidebar */}
-      <nav className="group fixed left-0 top-0 h-screen z-50 ps-glass border-r border-ps-border hidden md:flex flex-col items-center w-[80px] hover:w-[280px] transition-all duration-300 overflow-hidden py-6">
+      <nav className="group fixed left-0 top-0 h-screen z-50 ps-glass border-r border-ps-border hidden md:flex flex-col items-center w-[80px] hover:w-[280px] transition-all duration-300 overflow-y-auto overflow-x-hidden py-6">
         {/* Logo */}
         <NavLink
           to="/"
@@ -60,17 +62,16 @@ export default function Navbar() {
 
         {/* Nav Items */}
         <div className="flex flex-col w-full flex-1 gap-2 px-2">
-          {navItems.slice(0, 5).map((item) => {
+          {navItems.slice(0, 6).map((item) => {
             const isActive = location.pathname === item.path;
             const IconComponent = item.icon;
             return (
               <NavLink key={item.path} to={item.path}>
                 <motion.div
-                  className={`relative w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-colors ${
-                    isActive
-                      ? "text-ps-neon bg-ps-surface-2"
-                      : "text-ps-secondary hover:text-foreground"
-                  }`}
+                  className={`relative w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-colors ${isActive
+                    ? "text-ps-neon bg-ps-surface-2"
+                    : "text-ps-secondary hover:text-foreground"
+                    }`}
                   whileHover={{ x: 2 }}
                   title={item.label}
                 >
@@ -136,9 +137,6 @@ export default function Navbar() {
             <span className="hidden group-hover:block font-sst font-semibold text-sm tracking-wide whitespace-nowrap">
               Notifications
             </span>
-            <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full text-[8px] flex items-center justify-center text-white font-bold">
-              3
-            </span>
           </button>
 
           {/* Cart */}
@@ -200,9 +198,8 @@ export default function Navbar() {
           return (
             <NavLink key={item.path} to={item.path} className="flex-1">
               <motion.div
-                className={`flex flex-col items-center gap-0.5 py-1 rounded-lg transition-colors ${
-                  isActive ? "text-ps-neon" : "text-ps-secondary"
-                }`}
+                className={`flex flex-col items-center gap-0.5 py-1 rounded-lg transition-colors ${isActive ? "text-ps-neon" : "text-ps-secondary"
+                  }`}
                 whileTap={{ scale: 0.9 }}
               >
                 <div className="w-5 h-5">

@@ -5,8 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AppProvider } from "@/context/AppContext";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
+import SplashScreen from "@/components/SplashScreen";
 import Home from "./pages/Home";
 import Store from "./pages/Store";
 import Profile from "./pages/Profile";
@@ -15,32 +17,71 @@ import Experience from "./pages/Experience";
 import News from "./pages/News";
 import NotFound from "./pages/NotFound";
 import GameDetails from "./pages/GameDetails";
+import Consoles from "./pages/Consoles";
 
 const queryClient = new QueryClient();
 
-function AnimatedRoutes() {
+// Inner shell — lives inside BrowserRouter so it can read location
+function AppShell() {
   const location = useLocation();
+  const [splashKey, setSplashKey] = useState(0);
+  const [showSplash, setShowSplash] = useState(true);
+  // Track previous pathname so we only trigger on actual nav changes
+  const prevPath = useRef<string | null>(null);
+
+  // Trigger splash on every route change (sidebar navigation)
+  useEffect(() => {
+    if (prevPath.current !== null && prevPath.current !== location.pathname) {
+      setSplashKey((k) => k + 1);
+      setShowSplash(true);
+    }
+    prevPath.current = location.pathname;
+  }, [location.pathname]);
+
+  // Also trigger when user returns from another browser tab
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        setSplashKey((k) => k + 1);
+        setShowSplash(true);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
+
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial={{ x: 40, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        exit={{ x: -40, opacity: 0 }}
-        transition={{ duration: 0.25, ease: "easeInOut" }}
-      >
-        <Routes location={location}>
-          <Route path="/" element={<Home />} />
-          <Route path="/store" element={<Store />} />
-          <Route path="/store/:id" element={<GameDetails />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/social" element={<Social />} />
-          <Route path="/experience" element={<Experience />} />
-          <Route path="/news" element={<News />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </motion.div>
-    </AnimatePresence>
+    <div className="noise-overlay min-h-screen bg-background">
+      {/* Splash overlay — sits on top of everything when active */}
+      {showSplash && (
+        <SplashScreen key={splashKey} onDone={() => setShowSplash(false)} />
+      )}
+      <Navbar />
+      <CartSidebar />
+      <main className="pb-20 md:pb-0 pl-0 md:pl-[80px]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ x: 40, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -40, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+          >
+            <Routes location={location}>
+              <Route path="/" element={<Home />} />
+              <Route path="/store" element={<Store />} />
+              <Route path="/store/:id" element={<GameDetails />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/social" element={<Social />} />
+              <Route path="/experience" element={<Experience />} />
+              <Route path="/news" element={<News />} />
+              <Route path="/consoles" element={<Consoles />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </motion.div>
+        </AnimatePresence>
+      </main>
+    </div>
   );
 }
 
@@ -51,13 +92,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="noise-overlay min-h-screen bg-background">
-            <Navbar />
-            <CartSidebar />
-            <main className="pb-20 md:pb-0 pl-0 md:pl-[80px]">
-              <AnimatedRoutes />
-            </main>
-          </div>
+          <AppShell />
         </BrowserRouter>
       </AppProvider>
     </TooltipProvider>
