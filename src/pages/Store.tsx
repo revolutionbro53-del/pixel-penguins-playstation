@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '@/context/AppContext';
+import { useDiscounts } from '@/context/DiscountContext';
 import Modal from '@/components/Modal';
 import Toast from '@/components/Toast';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +14,49 @@ const psTiers = [
   { name: 'Extra', price: 749, features: ['Everything in Essential', 'Game Catalog (400+ titles)', 'PS4 & PS5 games', 'Early Access Trials', 'Ubisoft+ Classics'] },
   { name: 'Premium', price: 999, features: ['Everything in Extra', 'PS1/PS2/PS3 Classics', 'Game Trials', 'Cloud Streaming', 'Exclusive PS Classics'] },
 ];
+
+// ── Flash-deal price display ────────────────────────────────────────────────
+// Directly subscribes to DiscountContext so it re-renders on every discount change.
+function GamePriceDisplay({ gameId, basePrice }: { gameId: number; basePrice: number }) {
+  const { getDiscount } = useDiscounts();
+  const discount = getDiscount(gameId);
+  const [secsLeft, setSecsLeft] = useState<number>(() =>
+    discount ? Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000)) : 0
+  );
+
+  useEffect(() => {
+    if (!discount) { setSecsLeft(0); return; }
+    const tick = () => {
+      const rem = Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000));
+      setSecsLeft(rem);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [discount]);
+
+  // No active discount (or countdown expired) — show normal price
+  if (!discount || secsLeft <= 0) {
+    return <p className="font-rajdhani font-bold text-ps-neon text-lg">₹{basePrice.toLocaleString()}</p>;
+  }
+
+  return (
+    <div className="flex flex-col gap-0.5">
+      <div className="flex items-center gap-2 flex-wrap">
+        <p className="font-rajdhani font-bold text-green-400 text-lg">₹{discount.discountedPrice.toLocaleString()}</p>
+        <p className="font-rajdhani font-bold text-ps-secondary text-sm line-through">₹{basePrice.toLocaleString()}</p>
+        <span className="bg-green-500/20 text-green-400 text-[11px] font-bold font-rajdhani px-2 py-0.5 rounded-full">
+          -{discount.pct}%
+        </span>
+      </div>
+      <div className="flex items-center gap-1.5 text-[11px] font-rajdhani font-bold text-yellow-400">
+        <span>⚡</span>
+        <span>Flash Deal · {secsLeft}s left</span>
+      </div>
+    </div>
+  );
+}
+// ────────────────────────────────────────────────────────────────────────────
 
 export default function Store() {
   const { addToCart, setCartOpen } = useApp();
@@ -172,7 +216,7 @@ export default function Store() {
                   ))}
                   <span className="text-ps-secondary text-[11px] ml-1">{game.rating}</span>
                 </div>
-                <p className="font-rajdhani font-bold text-ps-neon text-lg">₹{game.price.toLocaleString()}</p>
+                <GamePriceDisplay gameId={game.id} basePrice={game.price} />
               </div>
             </motion.div>
           ))}
