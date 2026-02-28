@@ -96,7 +96,10 @@ export default function Navbar() {
         {/* Bottom Controls */}
         <div className="flex flex-col items-center gap-3 border-t border-ps-border pt-4 px-2 w-full">
           {/* Theme Switcher */}
-          <div className="relative flex items-center gap-2 w-full px-2" title="Theme">
+          <div
+            className="relative flex items-center gap-2 w-full px-2"
+            title="Theme"
+          >
             <select
               className="bg-ps-surface text-ps-secondary border border-ps-neon rounded-lg px-2 py-2 font-sst text-sm focus:outline-none focus:ring-2 focus:ring-ps-neon transition-colors shadow appearance-none cursor-pointer"
               style={{
