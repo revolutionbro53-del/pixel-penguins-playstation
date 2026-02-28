@@ -2,6 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import Modal from "@/components/Modal";
+import {
+  TrophyIcon,
+  MedalGoldIcon,
+  MedalSilverIcon,
+  MedalBronzeIcon,
+  PlatinumIcon,
+} from "@/components/icons";
 
 const heroGames = [
   {
@@ -109,7 +116,6 @@ const trophies = [
     name: "Platinum Soul",
     game: "Elden Ring",
     type: "platinum",
-    icon: "🏆",
     date: "Jan 12",
   },
   {
@@ -117,7 +123,6 @@ const trophies = [
     name: "100% Complete",
     game: "Spider-Man 2",
     type: "gold",
-    icon: "🥇",
     date: "Jan 8",
   },
   {
@@ -125,7 +130,6 @@ const trophies = [
     name: "Speed Runner",
     game: "God of War",
     type: "silver",
-    icon: "🥈",
     date: "Dec 28",
   },
   {
@@ -133,7 +137,6 @@ const trophies = [
     name: "First Blood",
     game: "GT7",
     type: "bronze",
-    icon: "🥉",
     date: "Dec 20",
   },
 ];
@@ -166,6 +169,21 @@ export default function Home() {
     gold: "text-ps-gold",
     silver: "text-gray-300",
     bronze: "text-amber-600",
+  };
+
+  const getTrophyIcon = (type: string) => {
+    switch (type) {
+      case "platinum":
+        return PlatinumIcon;
+      case "gold":
+        return MedalGoldIcon;
+      case "silver":
+        return MedalSilverIcon;
+      case "bronze":
+        return MedalBronzeIcon;
+      default:
+        return TrophyIcon;
+    }
   };
 
   return (
@@ -300,23 +318,28 @@ export default function Home() {
                 </button>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {trophies.map((t) => (
-                  <motion.div
-                    key={t.id}
-                    className="ps-card p-4 text-center"
-                    whileHover={{ y: -3 }}
-                    style={{ boxShadow: trophyGlow[t.type] }}
-                  >
-                    <div className="text-3xl mb-2">{t.icon}</div>
-                    <p
-                      className={`font-rajdhani font-bold text-sm ${trophyColor[t.type]}`}
+                {trophies.map((t) => {
+                  const IconComponent = getTrophyIcon(t.type);
+                  return (
+                    <motion.div
+                      key={t.id}
+                      className="ps-card p-4 text-center"
+                      whileHover={{ y: -3 }}
+                      style={{ boxShadow: trophyGlow[t.type] }}
                     >
-                      {t.name}
-                    </p>
-                    <p className="text-ps-secondary text-[11px]">{t.game}</p>
-                    <p className="text-ps-secondary text-[10px]">{t.date}</p>
-                  </motion.div>
-                ))}
+                      <div className="w-8 h-8 mx-auto mb-2 text-ps-neon">
+                        <IconComponent />
+                      </div>
+                      <p
+                        className={`font-rajdhani font-bold text-sm ${trophyColor[t.type]}`}
+                      >
+                        {t.name}
+                      </p>
+                      <p className="text-ps-secondary text-[11px]">{t.game}</p>
+                      <p className="text-ps-secondary text-[10px]">{t.date}</p>
+                    </motion.div>
+                  );
+                })}
               </div>
             </section>
           </div>

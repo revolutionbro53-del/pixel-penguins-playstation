@@ -2,16 +2,27 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { useApp } from '@/context/AppContext';
 import Modal from '@/components/Modal';
+import {
+  TrophyIcon,
+  MedalGoldIcon,
+  MedalSilverIcon,
+  MedalBronzeIcon,
+  PlatinumIcon,
+  PeopleIcon,
+  FireIcon,
+  CheckIcon,
+  CommentIcon,
+} from '@/components/icons';
 
 const trophyData = [
-  { name: "Platinum Soul", game: "Elden Ring", type: "platinum", icon: "🏆", date: "Jan 12, 2024", rarity: "0.8%" },
-  { name: "Perfect Run", game: "Spider-Man 2", type: "gold", icon: "🥇", date: "Jan 8, 2024", rarity: "2.1%" },
-  { name: "Speed Runner", game: "God of War", type: "gold", icon: "🥇", date: "Dec 28, 2023", rarity: "3.4%" },
-  { name: "Untouchable", game: "Horizon FW", type: "silver", icon: "🥈", date: "Dec 18, 2023", rarity: "8.7%" },
-  { name: "Completionist", game: "GT7", type: "silver", icon: "🥈", date: "Dec 10, 2023", rarity: "12.3%" },
-  { name: "First Blood", game: "Bloodborne", type: "bronze", icon: "🥉", date: "Nov 30, 2023", rarity: "45.2%" },
-  { name: "Explorer", game: "Elden Ring", type: "bronze", icon: "🥉", date: "Nov 22, 2023", rarity: "61.8%" },
-  { name: "Story Mode", game: "Ghost of Tsushima", type: "bronze", icon: "🥉", date: "Nov 15, 2023", rarity: "38.5%" },
+  { name: "Platinum Soul", game: "Elden Ring", type: "platinum", date: "Jan 12, 2024", rarity: "0.8%" },
+  { name: "Perfect Run", game: "Spider-Man 2", type: "gold", date: "Jan 8, 2024", rarity: "2.1%" },
+  { name: "Speed Runner", game: "God of War", type: "gold", date: "Dec 28, 2023", rarity: "3.4%" },
+  { name: "Untouchable", game: "Horizon FW", type: "silver", date: "Dec 18, 2023", rarity: "8.7%" },
+  { name: "Completionist", game: "GT7", type: "silver", date: "Dec 10, 2023", rarity: "12.3%" },
+  { name: "First Blood", game: "Bloodborne", type: "bronze", date: "Nov 30, 2023", rarity: "45.2%" },
+  { name: "Explorer", game: "Elden Ring", type: "bronze", date: "Nov 22, 2023", rarity: "61.8%" },
+  { name: "Story Mode", game: "Ghost of Tsushima", type: "bronze", date: "Nov 15, 2023", rarity: "38.5%" },
 ];
 
 const activityFeed = [
@@ -87,6 +98,23 @@ export default function Profile() {
     platinum: 'border-purple-400/30',
     gold: 'border-yellow-400/30',
     silver: 'border-gray-400/30',
+    bronze: 'border-amber-600/30',
+  };
+
+  const getTrophyIcon = (type: string) => {
+    switch (type) {
+      case "platinum":
+        return PlatinumIcon;
+      case "gold":
+        return MedalGoldIcon;
+      case "silver":
+        return MedalSilverIcon;
+      case "bronze":
+        return MedalBronzeIcon;
+      default:
+        return TrophyIcon;
+    }
+  };
     bronze: 'border-amber-600/30',
   };
 
@@ -179,17 +207,22 @@ export default function Profile() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <AnimatePresence mode="popLayout">
-              {filteredTrophies.map(t => (
-                <motion.div key={t.name} className={`ps-glass rounded-xl p-4 border ${trophyBorder[t.type]}`}
-                  layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-                  whileHover={{ y: -3 }} style={{ boxShadow: trophyGlow[t.type] }}>
-                  <div className="text-3xl mb-2">{t.icon}</div>
-                  <p className={`font-rajdhani font-bold text-base ${trophyColor[t.type]}`}>{t.name}</p>
-                  <p className="text-ps-secondary text-xs">{t.game}</p>
-                  <p className="text-ps-secondary text-xs mt-1">{t.date}</p>
-                  <p className="text-ps-secondary text-[11px] mt-1">Earned by {t.rarity} of players</p>
-                </motion.div>
-              ))}
+              {filteredTrophies.map(t => {
+                const IconComponent = getTrophyIcon(t.type);
+                return (
+                  <motion.div key={t.name} className={`ps-glass rounded-xl p-4 border ${trophyBorder[t.type]}`}
+                    layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                    whileHover={{ y: -3 }} style={{ boxShadow: trophyGlow[t.type] }}>
+                    <div className="w-8 h-8 mb-2 text-ps-neon">
+                      <IconComponent />
+                    </div>
+                    <p className={`font-rajdhani font-bold text-base ${trophyColor[t.type]}`}>{t.name}</p>
+                    <p className="text-ps-secondary text-xs">{t.game}</p>
+                    <p className="text-ps-secondary text-xs mt-1">{t.date}</p>
+                    <p className="text-ps-secondary text-[11px] mt-1">Earned by {t.rarity} of players</p>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
         </section>

@@ -2,14 +2,25 @@ import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/context/ThemeContext";
+import {
+  GamepadIcon,
+  HomeIcon,
+  StoreIcon,
+  SocialIcon,
+  XPIcon,
+  NewsIcon,
+  ProfileIcon,
+  BellIcon,
+  CartIcon,
+} from "@/components/icons";
 
 const navItems = [
-  { path: "/", label: "Home", icon: "⊞" },
-  { path: "/store", label: "Store", icon: "🛒" },
-  { path: "/social", label: "Social", icon: "👥" },
-  { path: "/experience", label: "XP", icon: "⚡" },
-  { path: "/news", label: "News", icon: "📰" },
-  { path: "/profile", label: "Profile", icon: "👤" },
+  { path: "/", label: "Home", icon: HomeIcon },
+  { path: "/store", label: "Store", icon: StoreIcon },
+  { path: "/social", label: "Social", icon: SocialIcon },
+  { path: "/experience", label: "XP", icon: XPIcon },
+  { path: "/news", label: "News", icon: NewsIcon },
+  { path: "/profile", label: "Profile", icon: ProfileIcon },
 ];
 
 export default function Navbar() {
@@ -33,7 +44,9 @@ export default function Navbar() {
           to="/"
           className="flex items-center gap-3 px-4 mb-8 whitespace-nowrap"
         >
-          <span className="text-3xl flex-shrink-0">🎮</span>
+          <div className="text-ps-neon w-8 h-8 flex-shrink-0">
+            <GamepadIcon />
+          </div>
           <div className="hidden group-hover:flex flex-col">
             <span className="font-sst font-bold text-xl tracking-wider">
               <span className="text-foreground">Play</span>
@@ -49,6 +62,7 @@ export default function Navbar() {
         <div className="flex flex-col w-full flex-1 gap-2 px-2">
           {navItems.slice(0, 5).map((item) => {
             const isActive = location.pathname === item.path;
+            const IconComponent = item.icon;
             return (
               <NavLink key={item.path} to={item.path}>
                 <motion.div
@@ -60,7 +74,9 @@ export default function Navbar() {
                   whileHover={{ x: 2 }}
                   title={item.label}
                 >
-                  <span className="text-2xl flex-shrink-0">{item.icon}</span>
+                  <div className="w-6 h-6 flex-shrink-0">
+                    <IconComponent />
+                  </div>
                   <span className="hidden group-hover:block font-sst font-semibold text-base tracking-wide whitespace-nowrap">
                     {item.label}
                   </span>
@@ -78,9 +94,9 @@ export default function Navbar() {
         </div>
 
         {/* Bottom Controls */}
-        <div className="flex flex-col items-center gap-3 border-t border-ps-border pt-4 px-2">
+        <div className="flex flex-col items-center gap-3 border-t border-ps-border pt-4 px-2 w-full">
           {/* Theme Switcher */}
-          <div className="relative w-10" title="Theme">
+          <div className="relative flex items-center gap-2 w-full px-2" title="Theme">
             <select
               className="bg-ps-surface text-ps-secondary border border-ps-neon rounded-lg px-2 py-2 font-sst text-sm focus:outline-none focus:ring-2 focus:ring-ps-neon transition-colors shadow appearance-none cursor-pointer"
               style={{
@@ -101,15 +117,23 @@ export default function Navbar() {
                 </option>
               ))}
             </select>
+            <span className="hidden group-hover:block font-sst font-semibold text-sm tracking-wide whitespace-nowrap text-ps-secondary">
+              Theme
+            </span>
           </div>
 
           {/* Notification */}
           <button
-            className="relative flex items-center justify-center text-ps-secondary hover:text-foreground transition-colors p-2"
+            className="relative flex items-center justify-start gap-2 text-ps-secondary hover:text-foreground transition-colors p-2 w-full px-2 rounded-lg"
             title="Notifications"
           >
-            <span className="text-2xl">🔔</span>
-            <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full text-[8px] flex items-center justify-center text-white font-bold">
+            <div className="w-6 h-6 flex-shrink-0">
+              <BellIcon />
+            </div>
+            <span className="hidden group-hover:block font-sst font-semibold text-sm tracking-wide whitespace-nowrap">
+              Notifications
+            </span>
+            <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full text-[8px] flex items-center justify-center text-white font-bold">
               3
             </span>
           </button>
@@ -117,34 +141,30 @@ export default function Navbar() {
           {/* Cart */}
           <button
             onClick={() => setCartOpen(true)}
-            className="relative flex items-center justify-center text-ps-secondary hover:text-foreground transition-colors p-2"
+            className="relative flex items-center justify-start gap-2 text-ps-secondary hover:text-foreground transition-colors p-2 w-full px-2 rounded-lg"
             title="Cart"
           >
-            <span className="text-2xl">🛒</span>
+            <div className="w-6 h-6 flex-shrink-0">
+              <CartIcon />
+            </div>
+            <span className="hidden group-hover:block font-sst font-semibold text-sm tracking-wide whitespace-nowrap">
+              Cart
+            </span>
             {cart.length > 0 && (
-              <span className="absolute top-0 right-0 w-3 h-3 bg-ps-neon rounded-full text-[8px] flex items-center justify-center text-black font-bold">
+              <span className="absolute top-2 right-2 w-3 h-3 bg-ps-neon rounded-full text-[8px] flex items-center justify-center text-black font-bold">
                 {cart.length}
               </span>
             )}
           </button>
 
-          {/* PS Plus badge */}
-          <div
-            className="px-2 py-2 rounded-lg border border-ps-gold text-ps-gold font-sst text-xs font-bold tracking-wide text-center hidden group-hover:block"
-            style={{ boxShadow: "0 0 8px hsl(51 100% 50% / 0.3)" }}
-            title="PS Plus"
-          >
-            PS+
-          </div>
-
-          {/* Avatar */}
+          {/* Avatar and PS Plus Row */}
           <NavLink
             to="/profile"
-            className="flex justify-center"
+            className="flex items-center justify-start gap-2 w-full px-2 rounded-lg transition-colors hover:bg-ps-surface-2"
             title="Profile"
           >
             <div
-              className="w-10 h-10 rounded-lg overflow-hidden border-2 border-ps-neon"
+              className="w-10 h-10 rounded-lg overflow-hidden border-2 border-ps-neon flex-shrink-0"
               style={{ boxShadow: "0 0 8px hsl(200 100% 50% / 0.5)" }}
             >
               <img
@@ -152,6 +172,18 @@ export default function Navbar() {
                 alt="Avatar"
                 className="w-full h-full object-cover bg-ps-surface-2"
               />
+            </div>
+            <span className="hidden group-hover:block font-sst font-semibold text-sm tracking-wide whitespace-nowrap">
+              Profile
+            </span>
+
+            {/* PS Plus badge */}
+            <div
+              className="hidden group-hover:block ml-auto px-2 py-1 rounded-lg border border-ps-gold text-ps-gold font-sst text-xs font-bold tracking-wide text-center"
+              style={{ boxShadow: "0 0 8px hsl(51 100% 50% / 0.3)" }}
+              title="PS Plus"
+            >
+              PS+
             </div>
           </NavLink>
         </div>
@@ -161,6 +193,7 @@ export default function Navbar() {
       <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden ps-glass border-t border-ps-border flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
+          const IconComponent = item.icon;
           return (
             <NavLink key={item.path} to={item.path} className="flex-1">
               <motion.div
@@ -169,7 +202,9 @@ export default function Navbar() {
                 }`}
                 whileTap={{ scale: 0.9 }}
               >
-                <span className="text-lg">{item.icon}</span>
+                <div className="w-5 h-5">
+                  <IconComponent />
+                </div>
                 <span className="font-sst text-[10px] font-semibold">
                   {item.label}
                 </span>
