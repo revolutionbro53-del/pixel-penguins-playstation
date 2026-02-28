@@ -1,9 +1,16 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '@/context/AppContext';
+import { useDiscounts } from '@/context/DiscountContext';
 
 export default function CartSidebar() {
   const { cart, removeFromCart, cartOpen, setCartOpen } = useApp();
-  const total = cart.reduce((s, i) => s + i.price, 0);
+  const { getDiscount } = useDiscounts();
+
+  const total = cart.reduce((s, item) => {
+    const discount = getDiscount(item.id);
+    const price = discount && discount.expiresAt !== null ? discount.discountedPrice : item.price;
+    return s + price;
+  }, 0);
 
   return (
     <AnimatePresence>
@@ -33,16 +40,31 @@ export default function CartSidebar() {
                   <div className="text-5xl mb-3">🛒</div>
                   <p className="font-rajdhani">Your cart is empty</p>
                 </div>
-              ) : cart.map(item => (
-                <div key={item.id} className="flex gap-3 p-3 bg-ps-surface-2 rounded-xl border border-ps-border">
-                  <img src={item.image} alt={item.title} className="w-16 h-16 rounded-lg object-cover" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-rajdhani font-semibold text-sm truncate">{item.title}</p>
-                    <p className="text-ps-neon font-bold">₹{item.price.toLocaleString()}</p>
+              ) : cart.map(item => {
+                const discount = getDiscount(item.id);
+                const hasActiveDiscount = discount && discount.expiresAt !== null;
+                const effectivePrice = hasActiveDiscount ? discount.discountedPrice : item.price;
+
+                return (
+                  <div key={item.id} className="flex gap-3 p-3 bg-ps-surface-2 rounded-xl border border-ps-border">
+                    <img src={item.image} alt={item.title} className="w-16 h-16 rounded-lg object-cover" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-rajdhani font-semibold text-sm truncate">{item.title}</p>
+                      <div className="flex items-center gap-2">
+                        <p className={hasActiveDiscount ? "text-green-400 font-bold" : "text-ps-neon font-bold"}>
+                          ₹{effectivePrice.toLocaleString()}
+                        </p>
+                        {hasActiveDiscount && (
+                          <p className="text-ps-secondary text-xs line-through">
+                            ₹{item.price.toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <button onClick={() => removeFromCart(item.id)} className="text-ps-secondary hover:text-red-400 transition-colors text-lg">✕</button>
                   </div>
-                  <button onClick={() => removeFromCart(item.id)} className="text-ps-secondary hover:text-red-400 transition-colors text-lg">✕</button>
-                </div>
-              ))}
+                );
+              })}
             </div>
             {cart.length > 0 && (
               <div className="p-4 border-t border-ps-border space-y-3">

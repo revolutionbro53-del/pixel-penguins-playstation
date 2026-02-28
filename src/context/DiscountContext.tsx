@@ -5,7 +5,7 @@ export interface ActiveDiscount {
     originalPrice: number;
     discountedPrice: number;
     pct: number;           // e.g. 25 means 25% off
-    expiresAt: number;     // Date.now() + 30_000
+    expiresAt: number | null; // null means pending activation
 }
 
 interface DiscountContextType {
@@ -13,6 +13,7 @@ interface DiscountContextType {
     applyDiscount: (discount: ActiveDiscount) => void;
     clearDiscount: (gameId: number) => void;
     getDiscount: (gameId: number) => ActiveDiscount | null;
+    startDiscountTimer: (gameId: number) => void;
 }
 
 const DiscountContext = createContext<DiscountContextType>({} as DiscountContextType);
@@ -37,14 +38,34 @@ export const DiscountProvider = ({ children }: { children: ReactNode }) => {
             const d = activeDiscounts[gameId];
             if (!d) return null;
             // Auto-expire if past expiry (safety guard)
-            if (Date.now() > d.expiresAt) return null;
+            if (d.expiresAt !== null && Date.now() > d.expiresAt) return null;
             return d;
         },
         [activeDiscounts],
     );
 
+    const startDiscountTimer = useCallback(
+        (gameId: number) => {
+            setActiveDiscounts(prev => {
+                const d = prev[gameId];
+                // Only start if it exists and hasn't started yet
+                if (!d || d.expiresAt !== null) return prev;
+                return {
+                    ...prev,
+                    [gameId]: { ...d, expiresAt: Date.now() + 30_000 }
+                };
+            });
+
+            // Automatically clear it after 30 seconds
+            setTimeout(() => {
+                clearDiscount(gameId);
+            }, 30_000);
+        },
+        [clearDiscount],
+    );
+
     return (
-        <DiscountContext.Provider value={{ activeDiscounts, applyDiscount, clearDiscount, getDiscount }}>
+        <DiscountContext.Provider value={{ activeDiscounts, applyDiscount, clearDiscount, getDiscount, startDiscountTimer }}>
             {children}
         </DiscountContext.Provider>
     );

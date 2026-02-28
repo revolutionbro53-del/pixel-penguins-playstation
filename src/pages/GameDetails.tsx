@@ -17,24 +17,21 @@ function DiscountPriceLarge({
     accentColor: string;
     gameId: number;
 }) {
-    const { getDiscount } = useDiscounts();
+    const { getDiscount, startDiscountTimer } = useDiscounts();
     const discount = getDiscount(gameId);
-    const [secsLeft, setSecsLeft] = useState<number>(() =>
-        discount ? Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000)) : 0
-    );
 
+    const [, setTick] = useState(0);
     useEffect(() => {
-        if (!discount) { setSecsLeft(0); return; }
-        const tick = () => {
-            const rem = Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000));
-            setSecsLeft(rem);
-        };
-        tick();
-        const id = setInterval(tick, 1000);
+        if (!discount || discount.expiresAt === null) return;
+        const id = setInterval(() => setTick(t => t + 1), 1000);
         return () => clearInterval(id);
     }, [discount]);
 
-    if (!discount || secsLeft <= 0) {
+    const secsLeft = discount && discount.expiresAt !== null
+        ? Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000))
+        : 0;
+
+    if (!discount || (discount.expiresAt !== null && secsLeft <= 0)) {
         return (
             <div className="flex flex-col">
                 <span className="text-ps-secondary text-xs uppercase tracking-widest">Price</span>
@@ -45,8 +42,15 @@ function DiscountPriceLarge({
         );
     }
 
+    const isPending = discount.expiresAt === null;
+
     return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 cursor-pointer" onClick={(e) => {
+            if (isPending) {
+                e.preventDefault();
+                startDiscountTimer(gameId);
+            }
+        }}>
             <span className="text-ps-secondary text-xs uppercase tracking-widest">Price</span>
             <div className="flex items-baseline gap-3">
                 <span className="font-rajdhani font-bold text-4xl text-green-400">
@@ -59,9 +63,9 @@ function DiscountPriceLarge({
                     -{discount.pct}%
                 </span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs font-rajdhani font-bold text-yellow-400">
+            <div className={`flex items-center gap-1.5 text-xs font-rajdhani font-bold ${isPending ? 'text-white bg-blue-600 px-2 py-1 rounded w-fit' : 'text-yellow-400'}`}>
                 <span>⚡</span>
-                <span>Flash Deal · {secsLeft}s remaining</span>
+                <span>{isPending ? 'Activate Flash Deal' : `Flash Deal · ${secsLeft}s remaining`}</span>
             </div>
         </div>
     );
@@ -72,7 +76,7 @@ export default function GameDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { addToCart, setCartOpen } = useApp();
-
+    const { getDiscount, startDiscountTimer } = useDiscounts();
     const [toastMsg, setToastMsg] = useState('');
     const [toastVisible, setToastVisible] = useState(false);
     const [following, setFollowing] = useState(false);
@@ -94,7 +98,20 @@ export default function GameDetails() {
     };
 
     const handleAddToCart = () => {
-        addToCart({ id: game.id, title: game.title, price: game.price, image: game.image });
+        if (!game) return;
+
+        // If there's a pending discount, activate it when adding to cart
+        const discount = getDiscount(game.id);
+        if (discount && discount.expiresAt === null) {
+            startDiscountTimer(game.id);
+        }
+
+        addToCart({
+            id: game.id,
+            title: game.title,
+            price: game.price,
+            image: game.image,
+        });
         showToast(`${game.title} added to cart`);
         setCartOpen(true);
     };
