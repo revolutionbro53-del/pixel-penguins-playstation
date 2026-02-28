@@ -97,7 +97,7 @@ export default function Navbar() {
                   value={opt.value}
                   className="bg-ps-surface text-ps-secondary"
                 >
-                  {opt.emoji} {opt.label}
+                  {opt.emoji}
                 </option>
               ))}
             </select>

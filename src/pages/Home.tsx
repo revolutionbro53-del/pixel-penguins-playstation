@@ -173,13 +173,13 @@ export default function Home() {
       {/* Hero Section with background image and greeting */}
       <div className="relative h-[60vh] md:h-[75vh] overflow-hidden flex items-center justify-center">
         <img
-          src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1920&q=80"
+          src="public\1ee2ad12-267f-4753-b308-69638d8e1950.jpg"
           alt="PlayStation Background"
           className="absolute inset-0 w-full h-full object-cover z-0"
-          style={{ filter: "brightness(0.6) blur(1px)" }}
+          style={{ filter: "brightness(0.85)" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
         <div className="relative z-10 text-center">
           <h1 className="font-rajdhani font-bold text-4xl md:text-6xl text-foreground mb-3 drop-shadow-lg">
             Good {getGreeting()}, {user.username}
