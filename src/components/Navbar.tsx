@@ -39,7 +39,9 @@ export default function Navbar() {
         const imageData = event.target?.result as string;
         localStorage.setItem("psWallpaper", imageData);
         // Dispatch custom event to notify Home component
-        window.dispatchEvent(new CustomEvent("wallpaperChange", { detail: imageData }));
+        window.dispatchEvent(
+          new CustomEvent("wallpaperChange", { detail: imageData }),
+        );
       };
       reader.readAsDataURL(file);
     }

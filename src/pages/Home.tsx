@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import Modal from "@/components/Modal";
 import {
@@ -170,7 +175,8 @@ export default function Home() {
       setWallpaper(e.detail);
     };
     window.addEventListener("wallpaperChange", handleWallpaperChange);
-    return () => window.removeEventListener("wallpaperChange", handleWallpaperChange);
+    return () =>
+      window.removeEventListener("wallpaperChange", handleWallpaperChange);
   }, []);
 
   const trophyGlow: Record<string, string> = {
@@ -212,22 +218,31 @@ export default function Home() {
   const bgOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
-    <div className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
+    <div
+      className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth"
+      style={{ scrollBehavior: "smooth" }}
+    >
       {/* Hero Section - Section 1 */}
-      <div ref={heroRef} className="relative h-screen w-full flex items-center justify-center snap-start overflow-hidden">
+      <div
+        ref={heroRef}
+        className="relative h-screen w-full flex items-center justify-center snap-start overflow-hidden"
+      >
         <motion.img
           src={wallpaper || "public\\1ee2ad12-267f-4753-b308-69638d8e1950.jpg"}
           alt="PlayStation Background"
           className="fixed inset-0 w-full h-full object-cover z-0"
-          style={{ 
+          style={{
             filter: "brightness(0.85)",
             opacity: bgOpacity,
-            pointerEvents: "none"
+            pointerEvents: "none",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
-        <motion.div className="relative z-10 text-center" style={{ opacity: greetingOpacity }}>
+        <motion.div
+          className="relative z-10 text-center"
+          style={{ opacity: greetingOpacity }}
+        >
           <h1 className="font-rajdhani font-bold text-4xl md:text-6xl text-foreground mb-3 drop-shadow-lg">
             Good {getGreeting()}, {user.username}
           </h1>
