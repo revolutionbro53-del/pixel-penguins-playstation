@@ -1,8 +1,7 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/context/ThemeContext";
-import { useState } from "react";
 
 const navItems = [
   { path: "/", label: "Home", icon: "⊞" },
@@ -15,10 +14,8 @@ const navItems = [
 
 export default function Navbar() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { user, cart, setCartOpen } = useApp();
   const { theme, setTheme } = useTheme();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const themeOptions = [
     { value: "dark", label: "Dark", emoji: "🌑" },
@@ -30,11 +27,7 @@ export default function Navbar() {
   return (
     <>
       {/* Desktop Left Sidebar */}
-      <nav
-        className="group fixed left-0 top-0 h-screen z-50 ps-glass border-r border-ps-border hidden md:flex flex-col items-center w-[80px] hover:w-[280px] transition-all duration-300 overflow-hidden py-6"
-        onMouseEnter={() => setIsSidebarOpen(true)}
-        onMouseLeave={() => setIsSidebarOpen(false)}
-      >
+      <nav className="group fixed left-0 top-0 h-screen z-50 ps-glass border-r border-ps-border hidden md:flex flex-col items-center w-[80px] hover:w-[280px] transition-all duration-300 overflow-hidden py-6">
         {/* Logo */}
         <NavLink
           to="/"
@@ -85,17 +78,14 @@ export default function Navbar() {
         </div>
 
         {/* Bottom Controls */}
-        <div className="flex flex-col w-full gap-3 border-t border-ps-border pt-4 px-2">
+        <div className="flex flex-col items-center gap-3 border-t border-ps-border pt-4 px-2">
           {/* Theme Switcher */}
-          <div className="relative w-full" title="Theme">
+          <div className="relative w-10" title="Theme">
             <select
-              className="bg-ps-surface text-ps-secondary border border-ps-neon rounded-lg px-3 py-2 font-sst text-sm focus:outline-none focus:ring-2 focus:ring-ps-neon transition-colors shadow w-full"
+              className="bg-ps-surface text-ps-secondary border border-ps-neon rounded-lg px-2 py-2 font-sst text-sm focus:outline-none focus:ring-2 focus:ring-ps-neon transition-colors shadow appearance-none cursor-pointer"
               style={{
                 boxShadow: "0 0 8px hsl(var(--ps-neon) / 0.2)",
-              }}
-              className="bg-ps-surface text-ps-secondary border border-ps-neon rounded-lg px-3 py-2 font-sst text-sm focus:outline-none focus:ring-2 focus:ring-ps-neon transition-colors shadow w-full"
-              style={{
-                boxShadow: "0 0 8px hsl(var(--ps-neon) / 0.2)",
+                backgroundImage: "none",
               }}
               value={theme}
               onChange={(e) => setTheme(e.target.value)}
@@ -115,11 +105,11 @@ export default function Navbar() {
 
           {/* Notification */}
           <button
-            className="relative w-full flex items-center justify-center text-ps-secondary hover:text-foreground transition-colors py-2"
+            className="relative flex items-center justify-center text-ps-secondary hover:text-foreground transition-colors p-2"
             title="Notifications"
           >
             <span className="text-2xl">🔔</span>
-            <span className="absolute top-0 right-1 w-3 h-3 bg-red-500 rounded-full text-[8px] flex items-center justify-center text-white font-bold">
+            <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full text-[8px] flex items-center justify-center text-white font-bold">
               3
             </span>
           </button>
@@ -127,12 +117,12 @@ export default function Navbar() {
           {/* Cart */}
           <button
             onClick={() => setCartOpen(true)}
-            className="relative w-full flex items-center justify-center text-ps-secondary hover:text-foreground transition-colors py-2"
+            className="relative flex items-center justify-center text-ps-secondary hover:text-foreground transition-colors p-2"
             title="Cart"
           >
             <span className="text-2xl">🛒</span>
             {cart.length > 0 && (
-              <span className="absolute top-0 right-1 w-3 h-3 bg-ps-neon rounded-full text-[8px] flex items-center justify-center text-black font-bold">
+              <span className="absolute top-0 right-0 w-3 h-3 bg-ps-neon rounded-full text-[8px] flex items-center justify-center text-black font-bold">
                 {cart.length}
               </span>
             )}
@@ -140,7 +130,7 @@ export default function Navbar() {
 
           {/* PS Plus badge */}
           <div
-            className="px-3 py-2 rounded-lg border border-ps-gold text-ps-gold font-sst text-xs font-bold tracking-wide text-center hidden group-hover:block"
+            className="px-2 py-2 rounded-lg border border-ps-gold text-ps-gold font-sst text-xs font-bold tracking-wide text-center hidden group-hover:block"
             style={{ boxShadow: "0 0 8px hsl(51 100% 50% / 0.3)" }}
             title="PS Plus"
           >
@@ -150,7 +140,7 @@ export default function Navbar() {
           {/* Avatar */}
           <NavLink
             to="/profile"
-            className="w-full flex justify-center"
+            className="flex justify-center"
             title="Profile"
           >
             <div
