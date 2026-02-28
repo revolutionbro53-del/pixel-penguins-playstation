@@ -13,6 +13,7 @@ import Store from "./pages/Store";
 import Profile from "./pages/Profile";
 import Social from "./pages/Social";
 import Experience from "./pages/Experience";
+import News from "./pages/News";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ function AnimatedRoutes() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/social" element={<Social />} />
           <Route path="/experience" element={<Experience />} />
+          <Route path="/news" element={<News />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>

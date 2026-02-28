@@ -8,6 +8,7 @@ const navItems = [
   { path: "/store", label: "Store", icon: "🛒" },
   { path: "/social", label: "Social", icon: "👥" },
   { path: "/experience", label: "XP", icon: "⚡" },
+  { path: "/news", label: "News", icon: "📰" },
   { path: "/profile", label: "Profile", icon: "👤" },
 ];
 
@@ -42,7 +43,7 @@ export default function Navbar() {
 
         {/* Nav Links */}
         <div className="flex items-center gap-1">
-          {navItems.slice(0, 4).map((item) => {
+          {navItems.slice(0, 5).map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <NavLink key={item.path} to={item.path}>
@@ -73,7 +74,7 @@ export default function Navbar() {
           {/* Theme Switcher */}
           <div className="relative">
             <select
-              className="bg-ps-surface text-ps-secondary border border-ps-border rounded px-2 py-1 font-sst text-sm focus:outline-none focus:ring-2 focus:ring-ps-neon transition-colors shadow"
+              className="bg-ps-surface text-ps-secondary border border-ps-neon rounded-xl px-2 py-1 font-sst text-sm focus:outline-none focus:ring-2 focus:ring-ps-neon transition-colors shadow"
               style={{
                 minWidth: 90,
                 boxShadow: "0 0 8px hsl(var(--ps-neon) / 0.2)",

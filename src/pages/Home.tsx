@@ -381,13 +381,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* News Ticker */}
-      <div className="bg-ps-blue mt-4 py-2 overflow-hidden">
-        <div className="marquee-inner text-white font-rajdhani font-semibold text-sm tracking-wide">
-          <span className="px-4">{newsTicker}</span>
-          <span className="px-4">{newsTicker}</span>
-        </div>
-      </div>
+      {/* News ticker removed - moved to News page */}
 
       {/* Join Game Modal */}
       <Modal
