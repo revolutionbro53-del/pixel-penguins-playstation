@@ -231,9 +231,9 @@ export default function Experience() {
   const chatRef = useRef<HTMLDivElement>(null);
 
   // ==========================================
-  // 🔑 DEVELOPER: ADD YOUR GEMINI API KEY HERE
+  // Real / Mock AI Coach Engine
   // ==========================================
-  const GEMINI_API_KEY = "AIzaSyBTY1gHw4RB3vbSPLt8mphhoeklDd1Bkhw";
+  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 
   const getGeminiResponse = async (prompt: string, key: string) => {
     try {
@@ -249,26 +249,38 @@ export default function Experience() {
       return data.candidates[0].content.parts[0].text;
     } catch (err: any) {
       console.error("Gemini Error Stack:", err);
-      console.error("Gemini Error Message:", err?.message);
-      return "Error connecting to AI Coach. Check console log.";
+      return "Network error: Make sure your API key in .env has quota available and is valid.";
     }
   };
 
+  const getSimulatedResponse = async (prompt: string) => {
+    // Check for exact matches in quick replies
+    if (aiResponses[prompt]) {
+      return aiResponses[prompt];
+    }
+    // Fallback response for unhandled prompts
+    return "I am currently running in offline mock mode since no API key is provided in the .env file. Please add VITE_GEMINI_API_KEY to enable full conversational AI.";
+  };
+
   const sendMessage = async (text: string) => {
+    if (!text.trim()) return;
+
     setMessages((m) => [...m, { from: "user", text }]);
     setTyping(true);
 
-    if (GEMINI_API_KEY && GEMINI_API_KEY.trim() !== "") {
-      const resp = await getGeminiResponse(text, GEMINI_API_KEY);
+    try {
+      let resp;
+      if (GEMINI_API_KEY && GEMINI_API_KEY.trim() !== "") {
+        resp = await getGeminiResponse(text, GEMINI_API_KEY);
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        resp = await getSimulatedResponse(text);
+      }
       setMessages((m) => [...m, { from: "ai", text: resp }]);
-    } else {
-      setTimeout(() => {
-        const resp =
-          aiResponses[text] ||
-          "Great question! But my real AI brain is offline. Please paste your Gemini API key in the GEMINI_API_KEY variable in the code!";
-        setMessages((m) => [...m, { from: "ai", text: resp }]);
-      }, 1000);
+    } catch (err) {
+      setMessages((m) => [...m, { from: "ai", text: "Oops, my network connection snapped! Try again." }]);
     }
+
     setTyping(false);
   };
 

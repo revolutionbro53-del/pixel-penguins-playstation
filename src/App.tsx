@@ -21,7 +21,6 @@ import News from "./pages/News";
 import NotFound from "./pages/NotFound";
 import GameDetails from "./pages/GameDetails";
 import Consoles from "./pages/Consoles";
-import GameCursorEffect from "@/components/GameCursorEffect";
 
 const queryClient = new QueryClient();
 
@@ -165,7 +164,6 @@ function AppShell() {
 
   return (
     <div className="noise-overlay min-h-screen bg-background">
-      <GameCursorEffect />
       <DiscountScheduler />
       {/* Splash overlay — sits on top of everything when active */}
       {showSplash && (

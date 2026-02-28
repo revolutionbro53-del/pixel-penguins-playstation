@@ -139,11 +139,11 @@ export const gamesData: Game[] = [
         releaseDate: "April 30, 2021",
         players: "1–2 Players (Online Co-op)",
         systemRequirements: {
-            os: "Windows 10 64-bit",
-            processor: "Intel Core i7-8700 or AMD Ryzen 7 2700X",
-            memory: "16 GB RAM",
-            graphics: "NVIDIA RTX 2070 Super",
-            storage: "60 GB Available Space"
+            os: "PlayStation 5",
+            processor: "AMD Zen 2 8-core @ 3.5 GHz",
+            memory: "16 GB GDDR6",
+            graphics: "AMD RDNA 2 — 10.28 TFLOPS",
+            storage: "60 GB (PS5 SSD Required)"
         },
         reviews: [
             { user: "ShadowRunner", avatarSeed: "shadow", rating: 5, date: "Apr 2021", comment: "The most innovative game of the PS5 launch era. Every death teaches you something and the world-building through environmental clues is absolutely genius." },
@@ -168,11 +168,11 @@ export const gamesData: Game[] = [
         releaseDate: "March 24, 2023",
         players: "Single Player",
         systemRequirements: {
-            os: "PlayStation 5 / Win 10",
-            processor: "AMD Ryzen 5 3600",
-            memory: "16 GB RAM",
-            graphics: "AMD Radeon RX 6700 XT",
-            storage: "70 GB Minimum"
+            os: "PlayStation 5 / PlayStation 4",
+            processor: "AMD Zen 2 8-core @ 3.5 GHz",
+            memory: "16 GB GDDR6",
+            graphics: "AMD RDNA 2 — 10.28 TFLOPS",
+            storage: "70 GB (PS5 SSD Required)"
         },
         reviews: [
             { user: "GhostBlade42", avatarSeed: "ghostblade", rating: 5, date: "Mar 2023", comment: "The village section alone is scarier than most horror games in their entirety. This remake faithfully enhances what made the original iconic without losing any of its magic." },
@@ -197,11 +197,11 @@ export const gamesData: Game[] = [
         releaseDate: "September 29, 2023",
         players: "1–4 Players (Online: 2+)",
         systemRequirements: {
-            os: "Windows 10 64-bit",
-            processor: "Intel Core i5-6600K",
-            memory: "8 GB RAM",
-            graphics: "NVIDIA GeForce GTX 1050 Ti",
-            storage: "100 GB Minimum"
+            os: "PlayStation 5 / PlayStation 4",
+            processor: "AMD Zen 2 8-core @ 3.5 GHz",
+            memory: "16 GB GDDR6",
+            graphics: "AMD RDNA 2 — 10.28 TFLOPS",
+            storage: "100 GB (PS5 SSD Required)"
         },
         reviews: [
             { user: "ArcticFox99", avatarSeed: "arctic", rating: 4, date: "Oct 2023", comment: "The new Playstyles system genuinely changes how top players feel on the pitch. Mbappe with his speed burst is terrifying. Ultimate Team grind is as addictive as ever." },
@@ -226,11 +226,11 @@ export const gamesData: Game[] = [
         releaseDate: "February 25, 2022",
         players: "1–4 Players (Online Co-op/PvP)",
         systemRequirements: {
-            os: "Windows 10",
-            processor: "Intel Core i7-8400",
-            memory: "16 GB RAM",
-            graphics: "NVIDIA GeForce GTX 1070",
-            storage: "60 GB Available Space"
+            os: "PlayStation 5 / PlayStation 4",
+            processor: "AMD Zen 2 8-core @ 3.5 GHz",
+            memory: "16 GB GDDR6",
+            graphics: "AMD RDNA 2 — 10.28 TFLOPS",
+            storage: "60 GB (PS5 SSD Recommended)"
         },
         reviews: [
             { user: "GhostBlade42", avatarSeed: "ghostblade", rating: 5, date: "Feb 2022", comment: "Game of a generation. The open world exploration is addictive — every hilltop hides something spectacular. Even after 200 hours I keep finding new questlines and dungeons." },
@@ -313,11 +313,11 @@ export const gamesData: Game[] = [
         releaseDate: "January 25, 2018",
         players: "Single Player",
         systemRequirements: {
-            os: "Windows 7 or newer",
-            processor: "Intel Core i3 M380",
-            memory: "2 GB RAM",
-            graphics: "Intel HD 4000",
-            storage: "1 GB Available Space"
+            os: "PlayStation 4 / PlayStation 5",
+            processor: "AMD Jaguar 8-core / AMD Zen 2 8-core",
+            memory: "8 GB GDDR5 / 16 GB GDDR6",
+            graphics: "AMD GCN 1.84 TFLOPS / AMD RDNA 2",
+            storage: "3 GB Minimum"
         },
         reviews: [
             { user: "PixelProwler", avatarSeed: "pixel", rating: 5, date: "Jan 2018", comment: "One of the most meaningful games I've ever played. The mental health narrative hit incredibly close to home. The B-sides will humble even the most experienced platformer veterans." },
@@ -342,11 +342,11 @@ export const gamesData: Game[] = [
         releaseDate: "January 27, 2023",
         players: "Single Player",
         systemRequirements: {
-            os: "Windows 10 64-bit",
-            processor: "AMD Ryzen 5 2600x",
-            memory: "16 GB RAM",
-            graphics: "AMD RX 6700 XT",
-            storage: "50 GB Minimum"
+            os: "PlayStation 5",
+            processor: "AMD Zen 2 8-core @ 3.5 GHz",
+            memory: "16 GB GDDR6",
+            graphics: "AMD RDNA 2 — 10.28 TFLOPS",
+            storage: "50 GB (PS5 SSD Required)"
         },
         reviews: [
             { user: "GhostBlade42", avatarSeed: "ghostblade", rating: 5, date: "Jan 2023", comment: "The Ishimura has never been more terrifying. Zero loading screen immersion combined with the new lighting makes even familiar rooms genuinely horrifying. Motive nailed it completely." },
@@ -400,11 +400,11 @@ export const gamesData: Game[] = [
         releaseDate: "December 10, 2020",
         players: "Single Player",
         systemRequirements: {
-            os: "Windows 10 64-bit",
-            processor: "Intel Core i7-6700K",
-            memory: "16 GB RAM",
-            graphics: "NVIDIA GeForce GTX 1060 6GB",
-            storage: "70 GB Available Space",
+            os: "PlayStation 5 / PlayStation 4",
+            processor: "AMD Zen 2 8-core @ 3.5 GHz",
+            memory: "16 GB GDDR6",
+            graphics: "AMD RDNA 2 — 10.28 TFLOPS",
+            storage: "70 GB (PS5 SSD Recommended)",
         },
         reviews: [
             { user: "NightOwl_PS", avatarSeed: "nightowl", rating: 5, date: "Oct 2022", comment: "Post-patch Cyberpunk is a completely different game. The depth of Night City is unmatched — I spent 20 hours just exploring before touching main missions. A redemption arc done right." },
@@ -487,11 +487,11 @@ export const gamesData: Game[] = [
         releaseDate: "July 19, 2022",
         players: "Single Player",
         systemRequirements: {
-            os: "Windows 10 64-bit",
-            processor: "Intel Core i5-2300",
-            memory: "8 GB RAM",
-            graphics: "NVIDIA GeForce GTX 650 Ti",
-            storage: "10 GB Available Space",
+            os: "PlayStation 5 / PlayStation 4",
+            processor: "AMD Zen 2 8-core @ 3.5 GHz",
+            memory: "16 GB GDDR6",
+            graphics: "AMD RDNA 2 — 10.28 TFLOPS",
+            storage: "10 GB Minimum",
         },
         reviews: [
             { user: "ArcticFox99", avatarSeed: "arctic", rating: 5, date: "Jul 2022", comment: "I cried at the ending. For a game where you play as an anonymous cat, the emotional weight Stray manages to deliver is staggering. B-12 is one of gaming's most loveable companions." },
@@ -516,11 +516,11 @@ export const gamesData: Game[] = [
         releaseDate: "February 10, 2023",
         players: "Single Player",
         systemRequirements: {
-            os: "Windows 10 64-bit",
-            processor: "Intel Core i7-8700K",
-            memory: "16 GB RAM",
-            graphics: "NVIDIA GeForce 1080 Ti",
-            storage: "85 GB Available Space",
+            os: "PlayStation 5 / PlayStation 4",
+            processor: "AMD Zen 2 8-core @ 3.5 GHz",
+            memory: "16 GB GDDR6",
+            graphics: "AMD RDNA 2 — 10.28 TFLOPS",
+            storage: "85 GB (PS5 SSD Recommended)",
         },
         reviews: [
             { user: "ShadowRunner", avatarSeed: "shadow", rating: 5, date: "Feb 2023", comment: "As a lifelong Harry Potter fan, walking through Hogwarts for the first time was overwhelming. The Astronomy Tower at sunset, the Great Hall at Christmas — it's everything I ever dreamed of." },
