@@ -24,26 +24,30 @@ import Consoles from "./pages/Consoles";
 
 const queryClient = new QueryClient();
 
-// Discount scheduler — fires a toast every 15s, discount lasts 30s
+// Discount scheduler — fires a toast every 15s, discount lasts 30s once activated
 function DiscountScheduler() {
-  const { applyDiscount, clearDiscount } = useDiscounts();
+  const { applyDiscount, clearDiscount, startDiscountTimer, getDiscount } = useDiscounts();
   const navigate = useNavigate();
-  const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastGameIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     const fireDiscount = () => {
-      // Clear previous discount if still running
-      if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
-      if (lastGameIdRef.current !== null) clearDiscount(lastGameIdRef.current);
+      // Clear previous un-activated discount if still running
+      if (lastGameIdRef.current !== null) {
+        const prev = getDiscount(lastGameIdRef.current);
+        if (prev && prev.expiresAt === null) {
+          clearDiscount(lastGameIdRef.current);
+        }
+      }
 
       // Pick a random game and a random discount %
       const game = gamesData[Math.floor(Math.random() * gamesData.length)];
       const pct = [10, 15, 20, 25, 30, 40][Math.floor(Math.random() * 6)];
-      const discountedPrice = Math.round(game.price * (1 - pct / 100));
-      const expiresAt = Date.now() + 30_000;
 
-      const discount = { gameId: game.id, originalPrice: game.price, discountedPrice, pct, expiresAt };
+      const discountedPrice = Math.round(game.price * (1 - pct / 100));
+
+      // Null means pending — timer starts when user clicks
+      const discount = { gameId: game.id, originalPrice: game.price, discountedPrice, pct, expiresAt: null };
       applyDiscount(discount);
       lastGameIdRef.current = game.id;
 
@@ -65,6 +69,7 @@ function DiscountScheduler() {
               cursor: 'pointer',
             }}
             onClick={() => {
+              startDiscountTimer(game.id);
               navigate(`/store/${game.id}`);
               toast.dismiss(t);
             }}
@@ -130,28 +135,21 @@ function DiscountScheduler() {
                 letterSpacing: '0.05em',
               }}
             >
-              Hurry! Expires in 30s — Tap to shop →
+              Only 30s once activated — Tap to claim →
             </div>
           </div>
         ),
         { duration: 8000 },
       );
-
-      // Auto-expire after 30s
-      clearTimerRef.current = setTimeout(() => {
-        clearDiscount(game.id);
-        lastGameIdRef.current = null;
-      }, 30_000);
     };
 
     // Fire first discount after 15s, then repeat every 15s
     const interval = setInterval(fireDiscount, 15_000);
     return () => {
       clearInterval(interval);
-      if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
       if (lastGameIdRef.current !== null) clearDiscount(lastGameIdRef.current);
     };
-  }, [applyDiscount, clearDiscount, navigate]);
+  }, [applyDiscount, clearDiscount, startDiscountTimer, navigate]);
 
   return null;
 }

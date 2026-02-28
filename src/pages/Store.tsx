@@ -19,27 +19,39 @@ const psTiers = [
 // Subscribes directly to DiscountContext. Uses a tick counter so secsLeft is
 // always computed fresh from expiresAt — never gated behind stale state.
 function GamePriceDisplay({ gameId, basePrice }: { gameId: number; basePrice: number }) {
-  const { getDiscount } = useDiscounts();
+  const { getDiscount, startDiscountTimer } = useDiscounts();
   const discount = getDiscount(gameId);
 
   // Tick every second just to force a re-render for the countdown display.
   // secsLeft itself is derived directly from expiresAt each render.
   const [, setTick] = useState(0);
   useEffect(() => {
-    if (!discount) return;
+    if (!discount || discount.expiresAt === null) return;
     const id = setInterval(() => setTick(t => t + 1), 1000);
     return () => clearInterval(id);
   }, [discount]);
 
   // Compute seconds left right now, from the authoritative expiry timestamp
-  const secsLeft = discount ? Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000)) : 0;
+  const secsLeft = discount && discount.expiresAt !== null
+    ? Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000))
+    : 0;
 
-  if (!discount || secsLeft <= 0) {
+  // No active discount (or countdown expired and it wasn't pending)
+  if (!discount || (discount.expiresAt !== null && secsLeft <= 0)) {
     return <p className="font-rajdhani font-bold text-ps-neon text-lg">₹{basePrice.toLocaleString()}</p>;
   }
 
+  const isPending = discount.expiresAt === null;
+
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className="flex flex-col gap-0.5" onClick={(e) => {
+      // If user clicks the price area while pending, activate it
+      if (isPending) {
+        e.preventDefault();
+        e.stopPropagation();
+        startDiscountTimer(gameId);
+      }
+    }}>
       <div className="flex items-center gap-2 flex-wrap">
         <p className="font-rajdhani font-bold text-green-400 text-lg">₹{discount.discountedPrice.toLocaleString()}</p>
         <p className="font-rajdhani font-bold text-ps-secondary text-sm line-through">₹{basePrice.toLocaleString()}</p>
@@ -47,9 +59,11 @@ function GamePriceDisplay({ gameId, basePrice }: { gameId: number; basePrice: nu
           -{discount.pct}%
         </span>
       </div>
-      <div className="flex items-center gap-1.5 text-[11px] font-rajdhani font-bold text-yellow-400">
+      <div
+        className={`flex items-center gap-1.5 text-[11px] font-rajdhani font-bold ${isPending ? 'text-white bg-blue-600 px-2 py-0.5 rounded cursor-pointer w-fit' : 'text-yellow-400'}`}
+      >
         <span>⚡</span>
-        <span>Flash Deal · {secsLeft}s left</span>
+        <span>{isPending ? 'Activate Flash Deal' : `Flash Deal · ${secsLeft}s left`}</span>
       </div>
     </div>
   );
@@ -58,6 +72,7 @@ function GamePriceDisplay({ gameId, basePrice }: { gameId: number; basePrice: nu
 
 export default function Store() {
   const { addToCart, setCartOpen } = useApp();
+  const { getDiscount, startDiscountTimer } = useDiscounts();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [activeGenre, setActiveGenre] = useState('All');
@@ -96,6 +111,12 @@ export default function Store() {
   };
 
   const handleAddToCart = (game: typeof gamesData[0]) => {
+    // If there's a pending discount, activate it when adding to cart
+    const discount = getDiscount(game.id);
+    if (discount && discount.expiresAt === null) {
+      startDiscountTimer(game.id);
+    }
+
     addToCart({ id: game.id, title: game.title, price: game.price, image: game.image });
     showToast(`${game.title} added to cart`);
     setCartOpen(true);

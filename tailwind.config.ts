@@ -12,8 +12,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        rajdhani: ['Rajdhani', 'sans-serif'],
-        inter: ['Inter', 'sans-serif'],
+        sans: ['SST', 'SST Light', 'SST Medium', 'SST Bold', 'Arial', 'sans-serif'],
+        rajdhani: ['SST', 'SST Light', 'SST Medium', 'SST Bold', 'Arial', 'sans-serif'],
+        inter: ['SST', 'SST Light', 'SST Medium', 'SST Bold', 'Arial', 'sans-serif'],
+        sst: ['SST', 'SST Light', 'SST Medium', 'SST Bold', 'Arial', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

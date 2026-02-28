@@ -1,3 +1,5 @@
+@import url('https://fonts.cdnfonts.com/css/sst');
+
 /* Theme color overrides */
 .theme-dark {
   /* Default, no override needed */
@@ -35,7 +37,6 @@
   --ps-border: 145 60% 20%;
   --ps-text-secondary: 145 10% 60%;
 }
-@import url('https://fonts.cdnfonts.com/css/sst');
 
 @tailwind base;
 @tailwind components;
