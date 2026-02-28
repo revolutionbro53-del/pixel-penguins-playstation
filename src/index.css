@@ -1,4 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inter:wght@300;400;500&display=swap');
+/* Theme color overrides */
+.theme-dark {
+  /* Default, no override needed */
+}
+
+.theme-blue {
+  --background: 220 60% 10%;
+  --primary: 220 100% 60%;
+  --ps-neon: 220 100% 60%;
+  --ps-blue: 220 100% 60%;
+  --ps-surface: 220 60% 13%;
+  --ps-surface-2: 220 60% 18%;
+  --ps-border: 220 60% 20%;
+  --ps-text-secondary: 220 10% 60%;
+}
+
+.theme-gold {
+  --background: 48 80% 12%;
+  --primary: 51 100% 50%;
+  --ps-neon: 51 100% 50%;
+  --ps-gold: 51 100% 50%;
+  --ps-surface: 48 80% 16%;
+  --ps-surface-2: 48 80% 22%;
+  --ps-border: 48 80% 24%;
+  --ps-text-secondary: 48 10% 60%;
+}
+
+.theme-green {
+  --background: 145 60% 10%;
+  --primary: 145 100% 39%;
+  --ps-neon: 145 100% 39%;
+  --ps-success: 145 100% 39%;
+  --ps-surface: 145 60% 13%;
+  --ps-surface-2: 145 60% 18%;
+  --ps-border: 145 60% 20%;
+  --ps-text-secondary: 145 10% 60%;
+}
+@import url('https://fonts.cdnfonts.com/css/sst');
 
 @tailwind base;
 @tailwind components;
@@ -69,13 +106,13 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'SST', 'SST Light', 'SST Medium', 'SST Bold', Arial, sans-serif;
     font-weight: 400;
     overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'SST', 'SST Light', 'SST Medium', 'SST Bold', Arial, sans-serif;
     font-weight: 700;
   }
 }
@@ -134,12 +171,8 @@
     border-color: hsl(var(--ps-neon) / 0.3);
   }
 
-  .font-rajdhani {
-    font-family: 'Rajdhani', sans-serif;
-  }
-
-  .font-inter {
-    font-family: 'Inter', sans-serif;
+  .font-rajdhani, .font-inter, .font-sst {
+    font-family: 'SST', 'SST Light', 'SST Medium', 'SST Bold', Arial, sans-serif;
   }
 
   .text-ps-blue { color: hsl(var(--ps-blue)); }
