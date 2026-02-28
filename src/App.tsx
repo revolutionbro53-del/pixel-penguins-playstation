@@ -21,23 +21,23 @@ import News from "./pages/News";
 import NotFound from "./pages/NotFound";
 import GameDetails from "./pages/GameDetails";
 import Consoles from "./pages/Consoles";
+import DebugLogger from "@/components/DebugLogger";
 
 const queryClient = new QueryClient();
 
 // Discount scheduler — fires a toast every 15s, discount lasts 30s once activated
 function DiscountScheduler() {
-  const { applyDiscount, clearDiscount, startDiscountTimer, getDiscount } = useDiscounts();
+  const { applyDiscount, clearPendingDiscount, startDiscountTimer } = useDiscounts();
   const navigate = useNavigate();
   const lastGameIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     const fireDiscount = () => {
-      // Clear previous un-activated discount if still running
+      // Clear previous un-activated discount if still running.
+      // clearPendingDiscount safely checks the latest state to ensure we
+      // only clear it if the user hasn't activated it (expiresAt === null).
       if (lastGameIdRef.current !== null) {
-        const prev = getDiscount(lastGameIdRef.current);
-        if (prev && prev.expiresAt === null) {
-          clearDiscount(lastGameIdRef.current);
-        }
+        clearPendingDiscount(lastGameIdRef.current);
       }
 
       // Pick a random game and a random discount %
@@ -147,9 +147,11 @@ function DiscountScheduler() {
     const interval = setInterval(fireDiscount, 15_000);
     return () => {
       clearInterval(interval);
-      if (lastGameIdRef.current !== null) clearDiscount(lastGameIdRef.current);
+      if (lastGameIdRef.current !== null) {
+        clearPendingDiscount(lastGameIdRef.current);
+      }
     };
-  }, [applyDiscount, clearDiscount, startDiscountTimer, navigate]);
+  }, [applyDiscount, clearPendingDiscount, startDiscountTimer, navigate]);
 
   return null;
 }
@@ -162,6 +164,7 @@ function AppShell() {
 
   return (
     <div className="noise-overlay min-h-screen bg-background">
+      <DebugLogger />
       <DiscountScheduler />
       {/* Splash overlay — sits on top of everything when active */}
       {showSplash && (
