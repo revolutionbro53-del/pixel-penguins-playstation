@@ -15,6 +15,7 @@ import {
   CartIcon,
   ConsolesIcon,
   CameraIcon,
+  MessageIcon,
 } from "@/components/icons";
 
 const navItems = [
@@ -22,6 +23,7 @@ const navItems = [
   { path: "/store", label: "Store", icon: StoreIcon },
   { path: "/consoles", label: "Consoles", icon: ConsolesIcon },
   { path: "/social", label: "Social", icon: SocialIcon },
+  { path: "/chat", label: "Chat", icon: MessageIcon },
   { path: "/experience", label: "XP", icon: XPIcon },
   { path: "/news", label: "News", icon: NewsIcon },
   { path: "/profile", label: "Profile", icon: ProfileIcon },
@@ -68,7 +70,7 @@ export default function Navbar() {
   return (
     <>
       {/* Desktop Left Sidebar */}
-      <nav className="group fixed left-0 top-0 h-screen z-50 ps-glass border-r border-ps-border hidden md:flex flex-col items-center w-[80px] hover:w-[280px] transition-all duration-300 py-6">
+      <nav className="group fixed left-0 top-0 h-screen z-50 ps-glass border-r border-ps-border hidden md:flex flex-col items-center w-[80px] hover:w-[280px] transition-all duration-300 py-6 overflow-y-auto overflow-x-hidden no-scrollbar">
         {/* Logo */}
         <NavLink
           to="/"
@@ -90,7 +92,7 @@ export default function Navbar() {
 
         {/* Nav Items */}
         <div className="flex flex-col w-full flex-1 gap-2 px-2">
-          {navItems.slice(0, 6).map((item) => {
+          {navItems.slice(0, 7).map((item) => {
             const isActive = location.pathname === item.path;
             const IconComponent = item.icon;
             return (

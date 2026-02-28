@@ -21,6 +21,7 @@ import News from "./pages/News";
 import NotFound from "./pages/NotFound";
 import GameDetails from "./pages/GameDetails";
 import Consoles from "./pages/Consoles";
+import Chat from "./pages/Chat";
 import DebugLogger from "@/components/DebugLogger";
 
 const queryClient = new QueryClient();
@@ -187,6 +188,7 @@ function AppShell() {
               <Route path="/store/:id" element={<GameDetails />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/social" element={<Social />} />
+              <Route path="/chat" element={<Chat />} />
               <Route path="/experience" element={<Experience />} />
               <Route path="/news" element={<News />} />
               <Route path="/consoles" element={<Consoles />} />
