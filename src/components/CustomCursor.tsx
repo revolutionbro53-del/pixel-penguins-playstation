@@ -23,13 +23,12 @@ export default function CustomCursor() {
 
   return (
     <>
-      <motion.div
+      <div
         className="custom-cursor"
         style={{ left: pos.x, top: pos.y }}
-        animate={{ x: 0, y: 0 }}
       >
         ✕
-      </motion.div>
+      </div>
       <motion.div
         className="fixed pointer-events-none z-[99998] w-8 h-8 rounded-full border border-ps-neon opacity-30"
         style={{

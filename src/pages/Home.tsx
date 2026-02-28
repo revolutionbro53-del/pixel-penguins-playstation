@@ -490,7 +490,9 @@ export default function Home() {
                 className="ps-glass rounded-xl p-3 flex items-center gap-3"
                 style={{ boxShadow: trophyGlow[t.type] }}
               >
-                <IconComponent />
+                <div className="w-8 h-8 flex-shrink-0 text-ps-neon">
+                  <IconComponent />
+                </div>
                 <div>
                   <p
                     className={`font-rajdhani font-bold text-sm ${trophyColor[t.type]}`}
