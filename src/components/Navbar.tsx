@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/context/ThemeContext";
 import {
@@ -32,6 +32,15 @@ export default function Navbar() {
   const { user, cart, setCartOpen } = useApp();
   const { theme, setTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  // Mock notifications
+  const notifications = [
+    { id: 1, text: "Spider-Man 2 is now on sale for 40% off in the PS Store!", time: "2h ago", unread: true },
+    { id: 2, text: "Friend request from ArcticFox99", time: "5h ago", unread: true },
+    { id: 3, text: "System software update 8.00 installed successfully.", time: "1d ago", unread: false },
+    { id: 4, text: "You earned a Trophy in God of War Ragnarök: The Bear and the Wolf.", time: "2d ago", unread: false },
+  ];
 
   const handleWallpaperUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,7 +68,7 @@ export default function Navbar() {
   return (
     <>
       {/* Desktop Left Sidebar */}
-      <nav className="group fixed left-0 top-0 h-screen z-50 ps-glass border-r border-ps-border hidden md:flex flex-col items-center w-[80px] hover:w-[280px] transition-all duration-300 overflow-y-auto overflow-x-hidden py-6">
+      <nav className="group fixed left-0 top-0 h-screen z-50 ps-glass border-r border-ps-border hidden md:flex flex-col items-center w-[80px] hover:w-[280px] transition-all duration-300 py-6">
         {/* Logo */}
         <NavLink
           to="/"
@@ -167,17 +176,62 @@ export default function Navbar() {
           />
 
           {/* Notification */}
-          <button
-            className="relative flex items-center justify-start gap-2 text-ps-secondary hover:text-foreground transition-colors p-2 w-full px-2 rounded-lg"
-            title="Notifications"
-          >
-            <div className="w-6 h-6 flex-shrink-0">
-              <BellIcon />
-            </div>
-            <span className="hidden group-hover:block font-sst font-semibold text-sm tracking-wide whitespace-nowrap">
-              Notifications
-            </span>
-          </button>
+          <div className="relative w-full">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative flex items-center justify-start gap-2 text-ps-secondary hover:text-foreground transition-colors p-2 w-full px-2 rounded-lg"
+              title="Notifications"
+            >
+              <div className="w-6 h-6 flex-shrink-0">
+                <BellIcon />
+              </div>
+              <span className="hidden group-hover:block font-sst font-semibold text-sm tracking-wide whitespace-nowrap">
+                Notifications
+              </span>
+              {/* Notification Badge indicator */}
+              {notifications.some(n => n.unread) && (
+                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-ps-neon rounded-full" />
+              )}
+            </button>
+
+            {/* Notification Dropdown Panel */}
+            {showNotifications && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="absolute left-[calc(100%+16px)] bottom-0 w-80 ps-glass border border-ps-border rounded-xl shadow-2xl z-[100]"
+              >
+                <div className="flex items-center justify-between p-4 border-b border-ps-border bg-ps-surface-2">
+                  <h3 className="font-sst font-bold text-lg text-white">Notifications</h3>
+                  <span className="text-xs text-ps-neon cursor-pointer hover:underline">Mark all read</span>
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                  {notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      className={`p-4 border-b border-ps-border/50 hover:bg-ps-surface transition-colors cursor-pointer flex gap-3 ${notif.unread ? 'bg-ps-surface/30' : ''}`}
+                    >
+                      <div className="mt-1">
+                        {notif.unread ? (
+                          <div className="w-2 h-2 rounded-full bg-ps-neon shadow-[0_0_8px_hsl(200,100%,50%)]" />
+                        ) : (
+                          <div className="w-2 h-2 rounded-full border border-ps-secondary" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className={`font-sst text-sm leading-snug ${notif.unread ? 'text-white' : 'text-gray-300'}`}>
+                          {notif.text}
+                        </p>
+                        <p className="font-rajdhani text-xs text-ps-secondary mt-1">
+                          {notif.time}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </div>
 
           {/* Cart */}
           <button
