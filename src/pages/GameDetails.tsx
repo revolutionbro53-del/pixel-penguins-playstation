@@ -2,8 +2,71 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gamesData } from '@/data/games';
 import { useApp } from '@/context/AppContext';
+import { useDiscounts } from '@/context/DiscountContext';
 import Toast from '@/components/Toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+
+// ── Discount price display for detail page ───────────────────────────────────
+function DiscountPriceLarge({
+    basePrice,
+    accentColor,
+    gameId,
+}: {
+    basePrice: number;
+    accentColor: string;
+    gameId: number;
+}) {
+    const { getDiscount } = useDiscounts();
+    const discount = getDiscount(gameId);
+    const [secsLeft, setSecsLeft] = useState<number>(() =>
+        discount ? Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000)) : 0
+    );
+
+    useEffect(() => {
+        if (!discount) { setSecsLeft(0); return; }
+        const tick = () => {
+            const rem = Math.max(0, Math.round((discount.expiresAt - Date.now()) / 1000));
+            setSecsLeft(rem);
+        };
+        tick();
+        const id = setInterval(tick, 1000);
+        return () => clearInterval(id);
+    }, [discount]);
+
+    if (!discount || secsLeft <= 0) {
+        return (
+            <div className="flex flex-col">
+                <span className="text-ps-secondary text-xs uppercase tracking-widest">Price</span>
+                <span className="font-rajdhani font-bold text-4xl" style={{ color: accentColor }}>
+                    ₹{basePrice.toLocaleString()}
+                </span>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex flex-col gap-1">
+            <span className="text-ps-secondary text-xs uppercase tracking-widest">Price</span>
+            <div className="flex items-baseline gap-3">
+                <span className="font-rajdhani font-bold text-4xl text-green-400">
+                    ₹{discount.discountedPrice.toLocaleString()}
+                </span>
+                <span className="font-rajdhani font-bold text-xl text-ps-secondary line-through">
+                    ₹{basePrice.toLocaleString()}
+                </span>
+                <span className="bg-green-500/20 text-green-400 text-xs font-bold font-rajdhani px-2 py-0.5 rounded-full">
+                    -{discount.pct}%
+                </span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs font-rajdhani font-bold text-yellow-400">
+                <span>⚡</span>
+                <span>Flash Deal · {secsLeft}s remaining</span>
+            </div>
+        </div>
+    );
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function GameDetails() {
     const { id } = useParams();
@@ -103,15 +166,11 @@ export default function GameDetails() {
 
                     {/* Action buttons */}
                     <div className="flex flex-wrap items-center gap-4">
-                        <div className="flex flex-col">
-                            <span className="text-ps-secondary text-xs uppercase tracking-widest">Price</span>
-                            <span
-                                className="font-rajdhani font-bold text-4xl"
-                                style={{ color: accentColor }}
-                            >
-                                ₹{game.price.toLocaleString()}
-                            </span>
-                        </div>
+                        <DiscountPriceLarge
+                            basePrice={game.price}
+                            accentColor={accentColor}
+                            gameId={game.id}
+                        />
 
                         <motion.button
                             onClick={handleAddToCart}
@@ -131,8 +190,8 @@ export default function GameDetails() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             className={`font-rajdhani font-bold text-lg px-7 py-3 rounded-xl tracking-wide flex items-center gap-2 border-2 transition-all ${following
-                                    ? 'text-white border-transparent'
-                                    : 'bg-transparent text-foreground border-ps-border hover:border-foreground'
+                                ? 'text-white border-transparent'
+                                : 'bg-transparent text-foreground border-ps-border hover:border-foreground'
                                 }`}
                             style={following ? { background: accentColor, borderColor: accentColor } : {}}
                         >

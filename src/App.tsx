@@ -2,10 +2,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AppProvider } from "@/context/AppContext";
-import { useState } from "react";
+import { DiscountProvider, useDiscounts } from "@/context/DiscountContext";
+import { gamesData } from "@/data/games";
+import { useState, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
 import SplashScreen from "@/components/SplashScreen";
@@ -21,6 +24,138 @@ import Consoles from "./pages/Consoles";
 
 const queryClient = new QueryClient();
 
+// Discount scheduler — fires a toast every 15s, discount lasts 30s
+function DiscountScheduler() {
+  const { applyDiscount, clearDiscount } = useDiscounts();
+  const navigate = useNavigate();
+  const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastGameIdRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const fireDiscount = () => {
+      // Clear previous discount if still running
+      if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
+      if (lastGameIdRef.current !== null) clearDiscount(lastGameIdRef.current);
+
+      // Pick a random game and a random discount %
+      const game = gamesData[Math.floor(Math.random() * gamesData.length)];
+      const pct = [10, 15, 20, 25, 30, 40][Math.floor(Math.random() * 6)];
+      const discountedPrice = Math.round(game.price * (1 - pct / 100));
+      const expiresAt = Date.now() + 30_000;
+
+      const discount = { gameId: game.id, originalPrice: game.price, discountedPrice, pct, expiresAt };
+      applyDiscount(discount);
+      lastGameIdRef.current = game.id;
+
+      // Fire Sonner toast
+      toast.custom(
+        (t) => (
+          <div
+            style={{
+              background: 'hsl(220 20% 10%)',
+              border: '1px solid hsl(200 100% 40% / 0.5)',
+              borderRadius: '16px',
+              padding: '14px 18px',
+              boxShadow: '0 0 24px hsl(200 100% 50% / 0.25), 0 8px 32px hsl(0 0% 0% / 0.5)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              minWidth: '300px',
+              maxWidth: '360px',
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              navigate(`/store/${game.id}`);
+              toast.dismiss(t);
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontFamily: 'Rajdhani, sans-serif',
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  color: 'hsl(200 100% 60%)',
+                }}
+              >
+                ⚡ Flash Deal
+              </span>
+              <span
+                style={{
+                  background: 'hsl(142 70% 35%)',
+                  color: 'white',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  fontFamily: 'Rajdhani, sans-serif',
+                  padding: '2px 8px',
+                  borderRadius: '999px',
+                }}
+              >
+                -{pct}%
+              </span>
+            </div>
+            <div style={{ fontFamily: 'Rajdhani, sans-serif', fontWeight: 700, fontSize: '15px', color: 'white' }}>
+              {game.title}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span
+                style={{
+                  fontFamily: 'Rajdhani, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '20px',
+                  color: 'hsl(142 70% 55%)',
+                }}
+              >
+                ₹{discountedPrice.toLocaleString()}
+              </span>
+              <span
+                style={{
+                  fontFamily: 'Rajdhani, sans-serif',
+                  fontSize: '14px',
+                  color: 'hsl(215 15% 50%)',
+                  textDecoration: 'line-through',
+                }}
+              >
+                ₹{game.price.toLocaleString()}
+              </span>
+            </div>
+            <div
+              style={{
+                fontFamily: 'Rajdhani, sans-serif',
+                fontWeight: 700,
+                fontSize: '12px',
+                color: 'hsl(200 100% 60%)',
+                letterSpacing: '0.05em',
+              }}
+            >
+              Hurry! Expires in 30s — Tap to shop →
+            </div>
+          </div>
+        ),
+        { duration: 8000 },
+      );
+
+      // Auto-expire after 30s
+      clearTimerRef.current = setTimeout(() => {
+        clearDiscount(game.id);
+        lastGameIdRef.current = null;
+      }, 30_000);
+    };
+
+    // Fire first discount after 15s, then repeat every 15s
+    const interval = setInterval(fireDiscount, 15_000);
+    return () => {
+      clearInterval(interval);
+      if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
+      if (lastGameIdRef.current !== null) clearDiscount(lastGameIdRef.current);
+    };
+  }, [applyDiscount, clearDiscount, navigate]);
+
+  return null;
+}
+
 // Inner shell — lives inside BrowserRouter so it can read location
 function AppShell() {
   const location = useLocation();
@@ -29,6 +164,7 @@ function AppShell() {
 
   return (
     <div className="noise-overlay min-h-screen bg-background">
+      <DiscountScheduler />
       {/* Splash overlay — sits on top of everything when active */}
       {showSplash && (
         <SplashScreen onDone={() => setShowSplash(false)} />
@@ -66,11 +202,13 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AppProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppShell />
-        </BrowserRouter>
+        <DiscountProvider>
+          <Toaster />
+          <Sonner position="bottom-right" richColors={false} />
+          <BrowserRouter>
+            <AppShell />
+          </BrowserRouter>
+        </DiscountProvider>
       </AppProvider>
     </TooltipProvider>
   </QueryClientProvider>
