@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AppProvider } from "@/context/AppContext";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
 import SplashScreen from "@/components/SplashScreen";
@@ -24,37 +24,14 @@ const queryClient = new QueryClient();
 // Inner shell — lives inside BrowserRouter so it can read location
 function AppShell() {
   const location = useLocation();
-  const [splashKey, setSplashKey] = useState(0);
+  // Show splash only once on initial page load
   const [showSplash, setShowSplash] = useState(true);
-  // Track previous pathname so we only trigger on actual nav changes
-  const prevPath = useRef<string | null>(null);
-
-  // Trigger splash on every route change (sidebar navigation)
-  useEffect(() => {
-    if (prevPath.current !== null && prevPath.current !== location.pathname) {
-      setSplashKey((k) => k + 1);
-      setShowSplash(true);
-    }
-    prevPath.current = location.pathname;
-  }, [location.pathname]);
-
-  // Also trigger when user returns from another browser tab
-  useEffect(() => {
-    const handleVisibility = () => {
-      if (document.visibilityState === "visible") {
-        setSplashKey((k) => k + 1);
-        setShowSplash(true);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibility);
-    return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, []);
 
   return (
     <div className="noise-overlay min-h-screen bg-background">
       {/* Splash overlay — sits on top of everything when active */}
       {showSplash && (
-        <SplashScreen key={splashKey} onDone={() => setShowSplash(false)} />
+        <SplashScreen onDone={() => setShowSplash(false)} />
       )}
       <Navbar />
       <CartSidebar />
