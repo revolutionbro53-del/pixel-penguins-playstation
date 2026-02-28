@@ -36,7 +36,10 @@ export default function Navbar() {
         onMouseLeave={() => setIsSidebarOpen(false)}
       >
         {/* Logo */}
-        <NavLink to="/" className="flex items-center gap-3 px-4 mb-8 whitespace-nowrap">
+        <NavLink
+          to="/"
+          className="flex items-center gap-3 px-4 mb-8 whitespace-nowrap"
+        >
           <span className="text-3xl flex-shrink-0">🎮</span>
           <div className="hidden group-hover:flex flex-col">
             <span className="font-sst font-bold text-xl tracking-wider">
@@ -145,7 +148,11 @@ export default function Navbar() {
           </div>
 
           {/* Avatar */}
-          <NavLink to="/profile" className="w-full flex justify-center" title="Profile">
+          <NavLink
+            to="/profile"
+            className="w-full flex justify-center"
+            title="Profile"
+          >
             <div
               className="w-10 h-10 rounded-lg overflow-hidden border-2 border-ps-neon"
               style={{ boxShadow: "0 0 8px hsl(200 100% 50% / 0.5)" }}
