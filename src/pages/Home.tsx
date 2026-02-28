@@ -22,7 +22,7 @@ const heroGames = [
     genre: "Action Adventure",
     rating: 9.3,
     image:
-      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1920&q=80",
+      "https://unsplash.com/photos/a-close-up-of-a-spider-man-with-glowing-eyes-PXjQaGxi4JA",
     description: "Swing through Marvel's New York as both Peter and Miles.",
   },
   {
@@ -228,7 +228,7 @@ export default function Home() {
         className="relative h-screen w-full flex items-center justify-center snap-start overflow-hidden"
       >
         <motion.img
-          src={wallpaper || "public\\1ee2ad12-267f-4753-b308-69638d8e1950.jpg"}
+          src={wallpaper || "/IMAGE.png"}
           alt="PlayStation Background"
           className="fixed inset-0 w-full h-full object-cover z-0"
           style={{
@@ -408,15 +408,14 @@ export default function Home() {
                       className="w-10 h-10 rounded-full bg-ps-surface-2"
                     />
                     <div
-                      className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background pulse-dot ${
-                        friend.status === "ingame"
-                          ? "bg-ps-success"
-                          : friend.status === "online"
-                            ? "bg-blue-400"
-                            : friend.status === "away"
-                              ? "bg-yellow-400"
-                              : "bg-gray-500"
-                      }`}
+                      className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background pulse-dot ${friend.status === "ingame"
+                        ? "bg-ps-success"
+                        : friend.status === "online"
+                          ? "bg-blue-400"
+                          : friend.status === "away"
+                            ? "bg-yellow-400"
+                            : "bg-gray-500"
+                        }`}
                     />
                   </div>
                   <div className="flex-1 min-w-0">
