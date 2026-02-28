@@ -12,6 +12,7 @@ interface DiscountContextType {
     activeDiscounts: Record<number, ActiveDiscount>;
     applyDiscount: (discount: ActiveDiscount) => void;
     clearDiscount: (gameId: number) => void;
+    clearPendingDiscount: (gameId: number) => void;
     getDiscount: (gameId: number) => ActiveDiscount | null;
     startDiscountTimer: (gameId: number) => void;
 }
@@ -30,6 +31,19 @@ export const DiscountProvider = ({ children }: { children: ReactNode }) => {
             const next = { ...prev };
             delete next[gameId];
             return next;
+        });
+    }, []);
+
+    const clearPendingDiscount = useCallback((gameId: number) => {
+        setActiveDiscounts(prev => {
+            const d = prev[gameId];
+            // Only clear it if it exists and hasn't been activated yet
+            if (d && d.expiresAt === null) {
+                const next = { ...prev };
+                delete next[gameId];
+                return next;
+            }
+            return prev;
         });
     }, []);
 
@@ -65,7 +79,14 @@ export const DiscountProvider = ({ children }: { children: ReactNode }) => {
     );
 
     return (
-        <DiscountContext.Provider value={{ activeDiscounts, applyDiscount, clearDiscount, getDiscount, startDiscountTimer }}>
+        <DiscountContext.Provider value={{
+            activeDiscounts,
+            applyDiscount,
+            clearDiscount,
+            clearPendingDiscount,
+            getDiscount,
+            startDiscountTimer
+        }}>
             {children}
         </DiscountContext.Provider>
     );
